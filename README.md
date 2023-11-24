@@ -1,16 +1,12 @@
-# iris_delivery_app_stable
+# DeliveryAppFlutter
+## Descripción:
+Este repositorio contiene la aplicación móvil para un servicio de entrega, desarrollada con Flutter. Ofrece una interfaz de usuario intuitiva para realizar pedidos, rastrearlos y gestionar cuentas de usuario.
 
-A new Flutter project.
+## Tecnologías Utilizadas:
 
-## Getting Started
+Flutter
+Dart
+Paquetes Flutter para integración con APIs
 
-This project is a starting point for a Flutter application.
+La aplicación permite a los usuarios crear y gestionar pedidos, rastrear el estado de los pedidos y comunicarse con el servicio de entrega. Se conecta con el backend DeliveryAppServer para todas las operaciones relacionadas con datos.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
