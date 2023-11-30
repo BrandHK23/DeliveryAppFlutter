@@ -44,6 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
       )
     );
   }
+
   Widget _textFieldEmail(){
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),

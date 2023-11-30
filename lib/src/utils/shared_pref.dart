@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref{
@@ -24,5 +24,10 @@ class SharedPref{
   Future<bool> remove(String key) async{
     final prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);
+  }
+
+  void logout(BuildContext context)async{
+    await remove('user');
+    Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
   }
 }

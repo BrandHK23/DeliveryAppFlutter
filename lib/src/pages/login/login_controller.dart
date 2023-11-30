@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/users_providers.dart';
-import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 
 class LoginController{
@@ -34,7 +33,7 @@ class LoginController{
 
     ResponseApi responseApi = await usersProviders.login(email, password);
 
-    print('Respuesta objeto: ${responseApi}');
+    print('Respuesta objeto: $responseApi');
     print('Respuesta: ${responseApi.toJson()}');
 
     if(responseApi.success){

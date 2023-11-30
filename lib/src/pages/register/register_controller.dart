@@ -56,6 +56,12 @@ class RegisterController{
 
     MySnackbar.show(context, responseApi.message);
 
+    if(responseApi.success){
+      Future.delayed(Duration(seconds:2), (){
+        Navigator.pushReplacementNamed(context, 'login');
+      });
+    }
+
     print('ResponseApi: ${responseApi.toJson()}' );
 
     print('Email: $email');
