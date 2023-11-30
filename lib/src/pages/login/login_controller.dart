@@ -19,7 +19,14 @@ class LoginController{
     User user = User.fromJson(await _sharedPref.read('user') ?? {});
 
     if(user?.sessionToken != null){
-      Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+      print('User: ${user.toJson()}');
+
+      if(user.roles.length > 1) {
+        Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
+      }
+      else{
+        Navigator.pushNamedAndRemoveUntil(context, user.roles[0].route, (route) => false);
+      }
     }
   }
 
@@ -39,7 +46,15 @@ class LoginController{
     if(responseApi.success){
       User user = User.fromJson(responseApi.data);
       _sharedPref.save('user', user.toJson());
-      Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+
+      print('User: ${user.toJson()}');
+
+      if(user.roles.length > 1) {
+        Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
+      }
+      else{
+        Navigator.pushNamedAndRemoveUntil(context, user.roles[0].route, (route) => false);
+      }
 
     }else{
       print('Login fallido. ${responseApi.message}');

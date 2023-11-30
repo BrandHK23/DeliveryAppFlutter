@@ -52,4 +52,14 @@ class User {
     "image": image,
     "roles": roles,
   };
+
+  // This method checks if the user has a role with the given name
+  bool hasRole(String roleName) {
+    for (Rol role in roles) {
+      if (role.name == roleName) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
