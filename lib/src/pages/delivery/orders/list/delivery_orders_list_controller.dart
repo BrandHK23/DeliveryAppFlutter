@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 
 class DeliveryOrdersListController{
@@ -6,8 +7,14 @@ class DeliveryOrdersListController{
   SharedPref _sharedPref = new SharedPref();
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
 
-  Future init(BuildContext context){
+  User user;
+  Function refresh;
+
+  Future init(BuildContext context, Function refresh) async {
     this.context = context;
+    this.refresh = refresh;
+    user = User.fromJson(await _sharedPref.read("user"));
+    refresh();
   }
 
   void logout(){
@@ -17,5 +24,8 @@ class DeliveryOrdersListController{
   void openDrawer(){
     key.currentState.openDrawer();
 
+  }
+  void goToRoles(){
+    Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
   }
 }
