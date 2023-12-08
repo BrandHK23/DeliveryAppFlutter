@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iris_delivery_app_stable/src/api/environment.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 import 'package:path/path.dart';
 
 
@@ -16,17 +18,27 @@ class UsersProviders{
 
   BuildContext context;
 
-  Future init(BuildContext context) {
+  User sessionUser;
+
+  Future init(BuildContext context, {User sessionUser}) async{
     this.context = context;
+    this.sessionUser = sessionUser;
   }
 
   Future<User> getById(String id) async{
     try{
       Uri url = Uri.http(_url, '$_api/findById/$id');
       Map<String, String> headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json' ,
+        'Authorization': sessionUser.sessionToken
       };
       final res = await http.get(url, headers: headers);
+
+      if(res.statusCode == 401){
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
       final data = json.decode(res.body);
       User user = User.fromJson(data);
       return user;
@@ -67,6 +79,7 @@ class UsersProviders{
     try{
       Uri url = Uri.http(_url, '$_api/update');
       final request = http.MultipartRequest('PUT', url);
+      request.headers['Authorization'] = sessionUser.sessionToken;
 
       if(image != null){
         request.files.add(http.MultipartFile(
@@ -79,6 +92,12 @@ class UsersProviders{
 
       request.fields['user'] = json.encode(user);
       final response = await request.send(); // Enviar la petición
+
+      if(response.statusCode == 401){
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
       return response.stream.transform(utf8.decoder);
 
     }catch(e){
@@ -127,6 +146,27 @@ class UsersProviders{
       return responseApi;
     } catch (e) {
       print('Error en login: $e');
+      return null;
+    }
+  }
+
+  Future <ResponseApi> logout(String idUser) async{
+
+    try{
+      Uri url = Uri.http(_url, '$_api/logout');
+      String bodyParams = json.encode({
+        'id': idUser,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final data = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(data);
+      return responseApi;
+
+    }catch(e){
+      print('Error: $e');
       return null;
     }
   }

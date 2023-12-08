@@ -7,8 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/users_providers.dart';
-import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
-import 'package:iris_delivery_app_stable/src/utils/my_snackbar.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
 
@@ -31,9 +29,11 @@ class ClientUpdateController{
   Future init(BuildContext context, Function refresh) async{
     this.context = context;
     this.refresh = refresh;
-    usersProviders.init(context);
     _progressDialog = new ProgressDialog(context: context);
     user = User.fromJson(await _sharedPref.read("user"));
+
+    usersProviders.init(context, sessionUser: user);
+
 
     nameController.text = user.name;
     lastnameController.text = user.lastname;
@@ -46,12 +46,6 @@ class ClientUpdateController{
     String lastname = lastnameController.text.trim();
     String phone = phoneController.text.trim();
 
-
-    if(imageFile == null){
-      MyAlertDialog.show(context, 'Seleccione una imagen');
-      return;
-    }
-
     _progressDialog.show(max: 100, msg: 'Espere un momento...');
     isEnable = false;
 
@@ -60,6 +54,7 @@ class ClientUpdateController{
       name: name,
       lastname: lastname,
       phone: phone,
+      image: user.image,
     );
 
     Stream stream = await usersProviders.update(myUser, imageFile);
@@ -73,6 +68,7 @@ class ClientUpdateController{
 
       if(responseApi.success){
         user = await usersProviders.getById(user.id); // Obtener usuario de la BD
+        print('Usuario obtenido: ${user.toJson()}');
         _sharedPref.save("user", user.toJson()); // Guardar usuario en el SharedPref
         Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
       }

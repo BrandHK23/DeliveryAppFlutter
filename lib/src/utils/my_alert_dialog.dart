@@ -9,7 +9,7 @@ class MyAlertDialog {
           title: Text('Mensaje'),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cerrar'),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -21,3 +21,4 @@ class MyAlertDialog {
     );
   }
 }
+
