@@ -56,7 +56,7 @@ class _ClientAddressMapPageState extends State<ClientAddressMapPage> {
         width: double.infinity,
         margin: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: _con.selectRefPoint,
           child: Text(
             'Seleccionar dirección',
             style: TextStyle(
@@ -80,7 +80,7 @@ class _ClientAddressMapPageState extends State<ClientAddressMapPage> {
         child: Container(
           padding: EdgeInsets.all(10),
           child: Text(
-            'Calle 1, Colonia 1, Ciudad 1, Estado 1',
+            _con.addressName ?? '',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
           ),
@@ -104,6 +104,13 @@ class _ClientAddressMapPageState extends State<ClientAddressMapPage> {
       onMapCreated: _con.onMapCreated,
       myLocationEnabled: false,
       myLocationButtonEnabled: false,
+      onCameraMove: (position) {
+        _con.initialPosition = position;
+      },
+      onCameraIdle: () async {
+        await _con.setLocationDraggableInfo();
+        refresh();
+      },
     );
   }
 

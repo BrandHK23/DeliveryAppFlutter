@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -8,6 +9,9 @@ class ClientAddressMapController {
   BuildContext context;
   Function refresh;
   Position _position;
+
+  String addressName;
+  LatLng addressLatLng;
 
   CameraPosition initialPosition = CameraPosition(
     target: LatLng(19.4357435, -100.3591198),
@@ -91,8 +95,8 @@ class ClientAddressMapController {
 
   void _getCurrentLocation() {
     Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best,
-        forceAndroidLocationManager: true)
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
         .then((Position position2) {
       setState(() {
         _position = position2;
@@ -102,6 +106,40 @@ class ClientAddressMapController {
     });
   }
 
-  void setState(Null Function() param0) {
+  Future<Null> setLocationDraggableInfo() async {
+    if (initialPosition != null) {
+      double lat = initialPosition.target.latitude;
+      double lng = initialPosition.target.longitude;
+
+      List<Placemark> address = await placemarkFromCoordinates(lat, lng);
+      if (address != null) {
+        if (address.length > 0) {
+          String direction = address[0].thoroughfare;
+          String street = address[0].subThoroughfare;
+          String city = address[0].locality;
+          String department = address[0].administrativeArea;
+          String country = address[0].country;
+
+          addressName = '$direction $street, $city, $department, $country';
+          addressLatLng = new LatLng(lat, lng);
+
+          print('LAT: ${addressLatLng.latitude}');
+          print('LNG: ${addressLatLng.longitude}');
+
+          refresh();
+        }
+      }
+    }
+  }
+
+  void setState(Null Function() param0) {}
+
+  void selectRefPoint() {
+    Map<String, dynamic> data = {
+      'address': addressName,
+      'lat': addressLatLng.latitude,
+      'lng': addressLatLng.longitude,
+    };
+    Navigator.pop(context, data);
   }
 }
