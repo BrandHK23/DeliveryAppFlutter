@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as location;
 
 class ClientAddressMapController {
   BuildContext context;
@@ -39,12 +38,12 @@ class ClientAddressMapController {
 
   void checkGPS() async {
     bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
-
     if (isLocationEnabled) {
       updateLocation();
     } else {
-      bool locationGPS = await location.Location().requestService();
-      if (locationGPS) {
+      bool result = await Geolocator.openLocationSettings();
+      _getCurrentLocation();
+      if (result) {
         updateLocation();
       }
     }
@@ -56,7 +55,7 @@ class ClientAddressMapController {
       controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(lat, lng),
-          zoom: 17,
+          zoom: 19,
           bearing: 0,
         ),
       ));
@@ -88,5 +87,21 @@ class ClientAddressMapController {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  void _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+        forceAndroidLocationManager: true)
+        .then((Position position2) {
+      setState(() {
+        _position = position2;
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  void setState(Null Function() param0) {
   }
 }
