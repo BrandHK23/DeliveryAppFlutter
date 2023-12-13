@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:iris_delivery_app_stable/src/models/address.dart';
+import 'package:iris_delivery_app_stable/src/models/order.dart';
+import 'package:iris_delivery_app_stable/src/models/product.dart';
+import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/address_providers.dart';
+import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 
 class ClientAddressListController {
@@ -16,6 +20,9 @@ class ClientAddressListController {
   int radioValue = 0;
 
   bool isCreated;
+  Map<String, dynamic> dataIsCreated;
+
+  OrdersProviders _ordersProviders = new OrdersProviders();
 
   Future init(BuildContext context, Function refresh) async {
     this.context = context;
@@ -23,6 +30,7 @@ class ClientAddressListController {
     user = User.fromJson(await _sharedPref.read('user'));
 
     _addressProviders.init(context, user);
+    _ordersProviders.init(context, user);
 
     refresh();
   }
@@ -56,5 +64,20 @@ class ClientAddressListController {
         refresh();
       }
     }
+  }
+
+  void createOrder() async {
+    Address a = Address.fromJson(await _sharedPref.read('address') ?? {});
+    List<Product> selectedProducts =
+        Product.fromJsonList(await _sharedPref.read('order')).toList;
+
+    Order order = new Order(
+      idClient: user.id,
+      idAddress: a.id,
+      products: selectedProducts,
+    );
+    ResponseApi responseApi = await _ordersProviders.create(order);
+
+    print('Respuesta: ${responseApi.message}');
   }
 }

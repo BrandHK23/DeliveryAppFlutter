@@ -1,38 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:iris_delivery_app_stable/src/models/order.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/detail/restaurant_orders_detail_page.dart';
+import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-class RestaurantOrdersListController{
+class RestaurantOrdersListController {
   BuildContext context;
   SharedPref _sharedPref = new SharedPref();
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
-
-  User user;
+  
   Function refresh;
+  User user;
+
+  List<String> status = ['CREATED', 'PREPARED', 'SENT', 'DELIVERED'];
+  OrdersProviders _ordersProviders = new OrdersProviders();
 
   Future init(BuildContext context, Function refresh) async {
     this.context = context;
     this.refresh = refresh;
     user = User.fromJson(await _sharedPref.read("user"));
+
+    _ordersProviders.init(context, user);
     refresh();
   }
 
-  void logout(){
+  Future<List<Order>> getOrders(String status) async {
+    return await _ordersProviders.getByStatus(status);
+  }
+
+  void openBottomSheet(Order order) {
+    showMaterialModalBottomSheet(
+        context: context,
+        builder: (context) => RestaurantOrdersDetailPage(order: order));
+  }
+
+  void logout() {
     _sharedPref.logout(context, user.id);
   }
 
-  void openDrawer(){
+  void openDrawer() {
     key.currentState.openDrawer();
-
   }
-  void goToRoles(){
+
+  void goToRoles() {
     Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
   }
 
-  void goToCategoryCreate(){
+  void goToCategoryCreate() {
     Navigator.pushNamed(context, 'restaurant/categories/create');
   }
-  void goToProductCreate(){
+
+  void goToProductCreate() {
     Navigator.pushNamed(context, 'restaurant/products/create');
   }
 }

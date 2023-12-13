@@ -13,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   LoginController _con = new LoginController();
 
   @override
@@ -21,35 +20,38 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     super.initState();
 
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {_con.init(context);
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _con.init(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              _lottieAnimation(),
-              _textFieldEmail(),
-              _textFieldPassword(),
-              _buttonLogin(),
-              _rowTexts(),
-            ],
+      body: Stack(
+        children: [
+          // Contenido desplazable
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                // Tus widgets van aquí, por ejemplo:
+                _lottieAnimation(),
+                _textFieldEmail(),
+                _textFieldPassword(),
+                _buttonLogin(),
+                _rowTexts(),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-
-
-  Widget _imageBanner(){
+  Widget _imageBanner() {
     return Container(
-      margin: EdgeInsets.only(top: 80, bottom: MediaQuery.of(context).size.height * 0.2),
+      margin: EdgeInsets.only(
+          top: 80, bottom: MediaQuery.of(context).size.height * 0.2),
       child: Image.asset(
         'assets/img/delivery.png',
         width: 200,
@@ -57,84 +59,80 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  Widget _textFieldEmail(){
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-      decoration: BoxDecoration(
-        color: MyColors.primaryOpacityColor,
-        borderRadius: BorderRadius.circular(30)
-      ),
-      child: TextField(
-        controller: _con.emailController,
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(
-          hintText: 'Correo electrónico',
-          hintStyle: TextStyle(
-          color: MyColors.primaryColorDark
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.all(15),
-          prefixIcon: Icon(Icons.email,
-            color: MyColors.primaryColor,)
-        ),
-      ),
-    );
-  }
 
-  Widget _textFieldPassword(){
+  Widget _textFieldEmail() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
           color: MyColors.primaryOpacityColor,
-          borderRadius: BorderRadius.circular(30)
+          borderRadius: BorderRadius.circular(30)),
+      child: TextField(
+        controller: _con.emailController,
+        keyboardType: TextInputType.emailAddress,
+        decoration: InputDecoration(
+            hintText: 'Correo electrónico',
+            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(15),
+            prefixIcon: Icon(
+              Icons.email,
+              color: MyColors.primaryColor,
+            )),
       ),
+    );
+  }
+
+  Widget _textFieldPassword() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+      decoration: BoxDecoration(
+          color: MyColors.primaryOpacityColor,
+          borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.passwordController,
         obscureText: true,
         decoration: InputDecoration(
             hintText: 'Contraseña',
-            hintStyle: TextStyle(
-                color: MyColors.primaryColorDark
-            ),
+            hintStyle: TextStyle(color: MyColors.primaryColorDark),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
-            prefixIcon: Icon(Icons.lock,
-              color: MyColors.primaryColor,)
-        ),
+            prefixIcon: Icon(
+              Icons.lock,
+              color: MyColors.primaryColor,
+            )),
       ),
     );
   }
 
-  Widget _lottieAnimation(){
+  Widget _lottieAnimation() {
     return Container(
-      margin: EdgeInsets.only(top: 100, bottom: MediaQuery.of(context).size.height * 0.1),
-      child: Lottie.asset('assets/json/Animation.json',
-      width: 450,
-      height: 200,
-      fit: BoxFit.fill,
+      margin: EdgeInsets.only(
+          top: 100, bottom: MediaQuery.of(context).size.height * 0.1),
+      child: Lottie.asset(
+        'assets/json/Animation.json',
+        width: 450,
+        height: 200,
+        fit: BoxFit.fill,
       ),
     );
   }
 
-  Widget _buttonLogin(){
+  Widget _buttonLogin() {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 60, vertical: 10),
       child: ElevatedButton(
-        onPressed: _con.login,
-        child: Text('Iniciar sesión'),
-        style: ElevatedButton.styleFrom(
-          primary: MyColors.primaryColor,
-          shape: RoundedRectangleBorder(
-           borderRadius: BorderRadius.circular(30)
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 50)
-        )
-      ),
+          onPressed: _con.login,
+          child: Text('Iniciar sesión'),
+          style: ElevatedButton.styleFrom(
+              primary: MyColors.primaryColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              padding: EdgeInsets.symmetric(horizontal: 50))),
     );
   }
 
-  Widget _rowTexts(){
+  Widget _rowTexts() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -142,14 +140,13 @@ class _LoginPageState extends State<LoginPage> {
         SizedBox(width: 5),
         GestureDetector(
           onTap: _con.goToRegisterPage,
-          child: Text('Regístrate',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: MyColors.primaryColor
-          ),
+          child: Text(
+            'Regístrate',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: MyColors.primaryColor),
           ),
         )
-        ],
+      ],
     );
   }
 }

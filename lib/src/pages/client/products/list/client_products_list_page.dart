@@ -40,14 +40,14 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
               actions: [_shoppingBag()],
               flexibleSpace: Column(
                 children: [
-                  SizedBox(height: 40),
+                  SizedBox(height: 55),
                   _menuDrawer(),
                   SizedBox(height: 20),
                   _textFiledSearch(),
                 ],
               ),
               bottom: TabBar(
-                indicatorColor: MyColors.primaryColor,
+                indicatorColor: MyColors.primaryColorLight,
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.grey[400],
                 isScrollable: true,
@@ -281,25 +281,39 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
           ListTile(
             onTap: _con.goToUpdatePage,
             title: Text('Editar Perfil'),
-            trailing: Icon(Icons.edit),
+            trailing:
+                Icon(Icons.edit, color: MyColors.primaryColor.withOpacity(0.8)),
+          ),
+          Divider(
+            color: MyColors.primaryColor.withOpacity(0.8),
           ),
           ListTile(
             title: Text('Mis pedidos'),
-            trailing: Icon(Icons.shopping_cart),
+            trailing: Icon(Icons.shopping_cart, color: Colors.orange),
+          ),
+          Divider(
+            color: MyColors.primaryColor.withOpacity(0.8),
           ),
           _con.user != null
               ? _con.user.roles.length > 1
                   ? ListTile(
                       onTap: _con.goToRoles,
                       title: Text('Cambiar Rol'),
-                      trailing: Icon(Icons.person),
+                      trailing:
+                          Icon(Icons.person, color: MyColors.primaryColorDark),
                     )
                   : Container()
               : Container(),
+          Divider(
+            color: MyColors.primaryColor.withOpacity(0.8),
+          ),
           ListTile(
             onTap: _con.logout,
             title: Text('Cerrar sesión'),
-            trailing: Icon(Icons.power_settings_new),
+            trailing: Icon(Icons.power_settings_new, color: Colors.redAccent),
+          ),
+          Divider(
+            color: MyColors.primaryColor.withOpacity(0.8),
           ),
         ],
       ),
