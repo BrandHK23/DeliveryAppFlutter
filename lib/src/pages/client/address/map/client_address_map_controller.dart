@@ -98,9 +98,14 @@ class ClientAddressMapController {
             desiredAccuracy: LocationAccuracy.best,
             forceAndroidLocationManager: true)
         .then((Position position2) {
-      setState(() {
-        _position = position2;
-      });
+      if (position2 != null) {
+        setState(() {
+          _position = position2;
+          animateCameraToPosition(_position.latitude, _position.longitude);
+        });
+      } else {
+        print('No se pudo obtener la posición actual');
+      }
     }).catchError((e) {
       print(e);
     });
