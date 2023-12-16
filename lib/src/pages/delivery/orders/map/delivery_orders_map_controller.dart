@@ -5,7 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class ClientAddressMapController {
+class DeliveryOrdersMapController {
   BuildContext context;
   Function refresh;
   Position _position;
@@ -20,10 +20,34 @@ class ClientAddressMapController {
 
   Completer<GoogleMapController> _mapController = Completer();
 
+  BitmapDescriptor deliveryMarker;
+  BitmapDescriptor homeMarker;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
   Future init(BuildContext context, Function refresh) async {
     this.context = context;
     this.refresh = refresh;
+    deliveryMarker =
+        await createMarkerImageFromAsset('assets/img/delivery2.png');
+    homeMarker = await createMarkerImageFromAsset('assets/img/home.png');
     checkGPS();
+  }
+
+  void addMarker(String markerId, double lat, double lng, String title,
+      String content, BitmapDescriptor iconMarker) {
+    MarkerId id = MarkerId(markerId);
+    Marker marker = Marker(
+      markerId: id,
+      icon: iconMarker,
+      position: LatLng(lat, lng),
+      infoWindow: InfoWindow(
+        title: title,
+        snippet: content,
+      ),
+    );
+    markers[id] = marker;
+
+    refresh();
   }
 
   void onMapCreated(GoogleMapController controller) {
@@ -35,6 +59,8 @@ class ClientAddressMapController {
       await _determinePosition();
       _position = await Geolocator.getLastKnownPosition();
       animateCameraToPosition(_position.latitude, _position.longitude);
+      addMarker('delivery', _position.latitude, _position.longitude,
+          'Tu posisción', '', deliveryMarker);
     } catch (e) {
       print('Error ' + e);
     }
@@ -91,6 +117,13 @@ class ClientAddressMapController {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  Future<BitmapDescriptor> createMarkerImageFromAsset(String path) async {
+    ImageConfiguration configuration = ImageConfiguration();
+    BitmapDescriptor descriptor =
+        await BitmapDescriptor.fromAssetImage(configuration, path);
+    return descriptor;
   }
 
   void _getCurrentLocation() {

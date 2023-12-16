@@ -66,4 +66,5 @@ class ProductsProviders {
       return null;
     }
   }
+
 }

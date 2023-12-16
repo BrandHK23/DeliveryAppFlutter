@@ -10,9 +10,11 @@ class RestaurantOrdersListController {
   BuildContext context;
   SharedPref _sharedPref = new SharedPref();
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
-  
+
   Function refresh;
   User user;
+
+  bool isUpdated;
 
   List<String> status = ['CREATED', 'PREPARED', 'SENT', 'DELIVERED'];
   OrdersProviders _ordersProviders = new OrdersProviders();
@@ -30,10 +32,13 @@ class RestaurantOrdersListController {
     return await _ordersProviders.getByStatus(status);
   }
 
-  void openBottomSheet(Order order) {
-    showMaterialModalBottomSheet(
+  void openBottomSheet(Order order) async {
+    isUpdated = await showMaterialModalBottomSheet(
         context: context,
         builder: (context) => RestaurantOrdersDetailPage(order: order));
+    if (isUpdated ?? false) {
+      refresh();
+    }
   }
 
   void logout() {

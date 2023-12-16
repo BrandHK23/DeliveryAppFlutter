@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:iris_delivery_app_stable/src/models/order.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/list/restaurant_oreders_list_controller.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
+import 'package:iris_delivery_app_stable/src/utils/relative_time_util.dart';
 import 'package:iris_delivery_app_stable/src/widgets/no_data_widget.dart';
 
 class RestaurantOrdersListPage extends StatefulWidget {
@@ -129,7 +130,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                       width: double.infinity,
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: Text(
-                        'Pedido: ',
+                        'Fecha: ${RelativeTimeUtil.getRelativeTime(order.timestamp)}',
                         style: TextStyle(
                           fontSize: 13,
                           fontFamily: 'NimbusSans',

@@ -8,7 +8,7 @@ import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
 import 'package:iris_delivery_app_stable/src/provider/users_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 
-class RestaurantOrdersDetailController {
+class DeliveryOrdersDetailController {
   BuildContext context;
   Function refresh;
 
@@ -42,14 +42,12 @@ class RestaurantOrdersDetailController {
   }
 
   void updateOrder() async {
-    if (idDelivery != null) {
-      order.idDelivery = idDelivery;
-      ResponseApi responseApi = await _ordersProviders.updateToPrepared(order);
-      Fluttertoast.showToast(
-          msg: responseApi.message, toastLength: Toast.LENGTH_LONG);
-      Navigator.pop(context, true);
-    } else {
-      Fluttertoast.showToast(msg: 'Seleccione un repartidor');
+    ResponseApi responseApi = await _ordersProviders.updateToOnTheWay(order);
+    Fluttertoast.showToast(
+        msg: responseApi.message, toastLength: Toast.LENGTH_LONG);
+    if (responseApi.success) {
+      Navigator.pushNamed(context, 'delivery/orders/map',
+          arguments: order.toJson());
     }
   }
 

@@ -2,26 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:iris_delivery_app_stable/src/models/order.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
-import 'package:iris_delivery_app_stable/src/models/user.dart';
-import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/detail/restaurant_orders_detail_controller.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 import 'package:iris_delivery_app_stable/src/utils/relative_time_util.dart';
 import 'package:iris_delivery_app_stable/src/widgets/no_data_widget.dart';
 
-class RestaurantOrdersDetailPage extends StatefulWidget {
+import 'delivery_orders_detail_controller.dart';
+
+class DeliveryOrdersDetailPage extends StatefulWidget {
   Order order;
 
-  RestaurantOrdersDetailPage({Key key, @required this.order}) : super(key: key);
+  DeliveryOrdersDetailPage({Key key, @required this.order}) : super(key: key);
 
   @override
-  State<RestaurantOrdersDetailPage> createState() =>
-      _RestaurantOrdersDetailPageState();
+  State<DeliveryOrdersDetailPage> createState() =>
+      _DeliveryOrdersDetailPageState();
 }
 
-class _RestaurantOrdersDetailPageState
-    extends State<RestaurantOrdersDetailPage> {
-  RestaurantOrdersDetailController _con =
-      new RestaurantOrdersDetailController();
+class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
+  DeliveryOrdersDetailController _con = new DeliveryOrdersDetailController();
 
   @override
   void initState() {
@@ -56,11 +54,6 @@ class _RestaurantOrdersDetailPageState
           // Envolver con SingleChildScrollView
           child: Column(children: [
             Divider(color: Colors.grey[400], endIndent: 30, indent: 30),
-            _textDescription(),
-            _con.order.status != 'CREATED' ? _deliveryData() : Container(),
-            _con.order.status == 'CREATED'
-                ? _dropDown(_con.users)
-                : Container(),
             SizedBox(height: 5),
             _textData('Cliente: ',
                 '${_con.order.client.name ?? ''} ${_con.order.client.lastname ?? ''}'),
@@ -72,7 +65,7 @@ class _RestaurantOrdersDetailPageState
                 '${RelativeTimeUtil.getRelativeTime(_con.order.timestamp ?? 0)}'),
             Divider(color: Colors.grey[400], endIndent: 30, indent: 30),
             _textTotalPrice(),
-            _con.order.status == 'CREATED' ? _buttonNext() : Container(),
+            _buttonNext(),
           ]),
         ),
       ),
@@ -85,65 +78,6 @@ class _RestaurantOrdersDetailPageState
           : NoDataWidget(
               text: 'No hay productos',
             ),
-    );
-  }
-
-  Widget _textDescription() {
-    return Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.symmetric(horizontal: 30),
-      child: Text(
-        _con.order == 'CREATED' ? 'Asignar repartidor' : 'Repartidor asignado',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: MyColors.primaryColor,
-        ),
-      ),
-    );
-  }
-
-  Widget _dropDown(List<User> users) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-      child: Material(
-        elevation: 2,
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: DropdownButton(
-                  underline: Container(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.delivery_dining,
-                      color: MyColors.primaryColor,
-                    ),
-                  ),
-                  elevation: 3,
-                  isExpanded: true,
-                  hint: Text(
-                    'Seleccione un repartidor',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                  items: _dropDownItems(users),
-                  value: _con.idDelivery,
-                  onChanged: (option) {
-                    setState(() {
-                      print('Repartidor asigando: $option');
-                      _con.idDelivery = option;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -163,7 +97,7 @@ class _RestaurantOrdersDetailPageState
           ),
           SizedBox(width: 10), // Espacio entre el ícono y el texto
           Text(
-            '${_con.order.delivery?.name ?? ''}  ${_con.order.delivery?.lastname ?? ''}',
+            '${_con.order.delivery?.name ?? ''} ${_con.order.delivery?.lastname ?? ''}',
             style: TextStyle(
                 // Agrega aquí el estilo de texto que prefieras
                 ),
@@ -171,35 +105,6 @@ class _RestaurantOrdersDetailPageState
         ],
       ),
     );
-  }
-
-  List<DropdownMenuItem<String>> _dropDownItems(List<User> users) {
-    List<DropdownMenuItem<String>> list = [];
-    users.forEach((user) {
-      list.add(DropdownMenuItem(
-        child: Row(
-          children: [
-            Container(
-                height: 40,
-                width: 40,
-                margin: EdgeInsets.only(top: 10),
-                padding: EdgeInsets.all(20),
-                child: FadeInImage(
-                  image: user.image != null
-                      ? NetworkImage(user.image)
-                      : AssetImage('assets/img/no-image.png'),
-                  fit: BoxFit.cover,
-                  fadeInDuration: Duration(milliseconds: 50),
-                  placeholder: AssetImage('assets/img/no-image.png'),
-                )),
-            Text(user.name)
-          ],
-        ),
-        value: user.id,
-      ));
-    });
-
-    return list;
   }
 
   Widget _textData(String title, String content) {
@@ -273,7 +178,7 @@ class _RestaurantOrdersDetailPageState
                   alignment: Alignment.center,
                   height: 40,
                   child: Text(
-                    'Listo para recoger',
+                    'Orden recolectada',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -286,8 +191,8 @@ class _RestaurantOrdersDetailPageState
                   child: Container(
                     margin: EdgeInsets.only(left: 40, top: 3),
                     height: 30,
-                    child:
-                        Icon(Icons.check_circle, color: Colors.white, size: 30),
+                    child: Icon(Icons.shopping_bag,
+                        color: MyColors.primaryColorLight),
                   ))
             ],
           )),
