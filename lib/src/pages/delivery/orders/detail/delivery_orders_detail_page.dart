@@ -65,7 +65,7 @@ class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
                 '${RelativeTimeUtil.getRelativeTime(_con.order.timestamp ?? 0)}'),
             Divider(color: Colors.grey[400], endIndent: 30, indent: 30),
             _textTotalPrice(),
-            _buttonNext(),
+            _con.order.status != 'DELIVERED' ? _buttonNext() : Container(),
           ]),
         ),
       ),
@@ -164,7 +164,9 @@ class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
       child: ElevatedButton(
           onPressed: _con.updateOrder,
           style: ElevatedButton.styleFrom(
-            primary: MyColors.accentColor,
+            primary: _con.order?.status == 'PREPARED'
+                ? MyColors.accentColor
+                : MyColors.primaryColorDark,
             padding: EdgeInsets.symmetric(vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -178,7 +180,9 @@ class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
                   alignment: Alignment.center,
                   height: 40,
                   child: Text(
-                    'Orden recolectada',
+                    _con.order?.status == 'PREPARED'
+                        ? 'Orden recolectada'
+                        : 'Ir al mapa',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -246,6 +250,8 @@ class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

@@ -1,14 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:iris_delivery_app_stable/src/api/environment.dart';
+import 'package:iris_delivery_app_stable/src/models/order.dart';
+import 'package:iris_delivery_app_stable/src/models/response_api.dart';
+import 'package:iris_delivery_app_stable/src/models/user.dart';
+import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
+import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
+import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryOrdersMapController {
   BuildContext context;
   Function refresh;
   Position _position;
+  StreamSubscription<Position> _positionStream;
 
   String addressName;
   LatLng addressLatLng;
@@ -24,13 +35,72 @@ class DeliveryOrdersMapController {
   BitmapDescriptor homeMarker;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
+  Order order;
+
+  Set<Polyline> polylines = {};
+  List<LatLng> points = [];
+
+  OrdersProviders _ordersProviders = new OrdersProviders();
+  User user;
+  SharedPref _sharedPref = new SharedPref();
+
+  double _distanceBetween;
+
   Future init(BuildContext context, Function refresh) async {
     this.context = context;
     this.refresh = refresh;
     deliveryMarker =
         await createMarkerImageFromAsset('assets/img/delivery2.png');
     homeMarker = await createMarkerImageFromAsset('assets/img/home.png');
+    user = User.fromJson(await _sharedPref.read('user'));
+    _ordersProviders.init(context, user);
+    order = Order.fromJson(
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>);
+    print('Order: ${order.toJson()}');
+
     checkGPS();
+  }
+
+  void isCloseToDeliveryPosition() {
+    _distanceBetween = Geolocator.distanceBetween(_position.latitude,
+        _position.longitude, order.address.lat, order.address.lng);
+    print('Distancia: $_distanceBetween');
+  }
+
+  void updateToDelivered() async {
+    if (_distanceBetween <= 200) {
+      ResponseApi responseApi = await _ordersProviders.updateToDelivered(order);
+      if (responseApi.success) {
+        Fluttertoast.showToast(msg: responseApi.message);
+        Navigator.pushNamedAndRemoveUntil(
+            context, 'delivery/orders/list', (route) => false);
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'Aún no estás en dirección de entrega');
+    }
+  }
+
+  Future<void> setPolyLines(LatLng from, LatLng to) async {
+    PointLatLng pointFrom = PointLatLng(from.latitude, from.longitude);
+    PointLatLng pointTo = PointLatLng(to.latitude, to.longitude);
+    PolylineResult result = await PolylinePoints().getRouteBetweenCoordinates(
+        Environment.API_KEY_MAPS, pointFrom, pointTo);
+
+    for (PointLatLng point in result.points) {
+      points.add(LatLng(point.latitude, point.longitude));
+    }
+    Polyline polyline = Polyline(
+        polylineId: PolylineId('poly'),
+        color: MyColors.primaryColor,
+        points: points,
+        width: 6);
+
+    polylines.add(polyline);
+    refresh();
+  }
+
+  void dispose() {
+    _positionStream?.cancel();
   }
 
   void addMarker(String markerId, double lat, double lng, String title,
@@ -61,9 +131,31 @@ class DeliveryOrdersMapController {
       animateCameraToPosition(_position.latitude, _position.longitude);
       addMarker('delivery', _position.latitude, _position.longitude,
           'Tu posisción', '', deliveryMarker);
+      addMarker('home', order.address.lat, order.address.lng,
+          'Dirección de entrega', '', homeMarker);
+
+      LatLng from = new LatLng(_position.latitude, _position.longitude);
+      LatLng to = new LatLng(order.address.lat, order.address.lng);
+      setPolyLines(from, to);
+
+      _positionStream = Geolocator.getPositionStream(
+              desiredAccuracy: LocationAccuracy.best, distanceFilter: 1)
+          .listen((Position position) {
+        _position = position;
+        addMarker('delivery', _position.latitude, _position.longitude,
+            'Tu posisción', '', deliveryMarker);
+
+        animateCameraToPosition(_position.latitude, _position.longitude);
+        isCloseToDeliveryPosition();
+        refresh();
+      });
     } catch (e) {
       print('Error ' + e);
     }
+  }
+
+  void call() {
+    launch('tel://${order.client.phone}');
   }
 
   void checkGPS() async {
