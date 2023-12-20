@@ -288,6 +288,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
             color: MyColors.primaryColor.withOpacity(0.8),
           ),
           ListTile(
+            onTap: _con.goToOrdersList,
             title: Text('Mis pedidos'),
             trailing: Icon(Icons.shopping_cart, color: Colors.orange),
           ),

@@ -40,8 +40,7 @@ class ClientProductListController {
   void openBottomSheet(Product product) {
     showMaterialModalBottomSheet(
         context: context,
-        builder: (context) =>
-            ClientProductDetailPage(
+        builder: (context) => ClientProductDetailPage(
               product: product,
             ));
   }
@@ -62,8 +61,11 @@ class ClientProductListController {
     Navigator.pushNamed(context, 'client/update');
   }
 
+  void goToOrdersList() {
+    Navigator.pushNamed(context, 'client/orders/list');
+  }
+
   void goToOrdersCreatePage() {
     Navigator.pushNamed(context, 'client/orders/create');
   }
-
 }

@@ -102,6 +102,47 @@ class OrdersProviders {
     }
   }
 
+  Future<List<Order>> getByClientAndStatus(
+      String idClient, String status) async {
+    if (sessionUser == null || sessionUser.sessionToken == null) {
+      Fluttertoast.showToast(msg: 'No hay usuario de sesión');
+      return [];
+    }
+
+    try {
+      Uri url = Uri.http(_url, '$_api/findByClientAndStatus/$idClient/$status');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+
+      final res = await http.get(url, headers: headers);
+
+      if (res.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+        return [];
+      }
+
+      final responseBody = json.decode(res.body);
+
+      if (responseBody['data'] is List) {
+        // Extrae la lista de órdenes del campo 'data'
+        List<dynamic> ordersData = responseBody['data'];
+        Order order = Order.fromJsonList(ordersData);
+        return order.toList;
+      } else {
+        Fluttertoast.showToast(
+            msg: 'La respuesta no contiene una lista válida');
+        return [];
+      }
+    } catch (e) {
+      print('Error: $e');
+      Fluttertoast.showToast(msg: 'Ocurrió un error al obtener las órdenes');
+      return [];
+    }
+  }
+
   Future<ResponseApi> create(Order order) async {
     try {
       Uri url = Uri.http(_url, '$_api/create');
@@ -174,6 +215,29 @@ class OrdersProviders {
   Future<ResponseApi> updateToDelivered(Order order) async {
     try {
       Uri url = Uri.http(_url, '$_api/updateToOnDelivered');
+      String bodyParams = json.encode(order);
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+      final res = await http.put(url, headers: headers, body: bodyParams);
+
+      if (res.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+      final data = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(data);
+      return responseApi;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  Future<ResponseApi> updateLatLng(Order order) async {
+    try {
+      Uri url = Uri.http(_url, '$_api/updateLatLng');
       String bodyParams = json.encode(order);
       Map<String, String> headers = {
         'Content-Type': 'application/json',

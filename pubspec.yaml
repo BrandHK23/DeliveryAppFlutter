@@ -38,6 +38,8 @@ dependencies:
   geocoder: ^0.2.1
   flutter_polyline_points: ^0.2.4
   url_launcher: ^5.7.10
+  socket_io_client: ^0.9.12
+
 
 
 

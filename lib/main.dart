@@ -3,6 +3,8 @@ import 'package:iris_delivery_app_stable/src/pages/client/address/create/client_
 import 'package:iris_delivery_app_stable/src/pages/client/address/list/client_address_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/address/map/client_address_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/orders/create/client_orders_create_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/orders/list/client_orders_list_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/orders/map/client_orders_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/products/list/client_products_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/update/client_update_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/list/delivery_orders_list_page.dart';
@@ -43,6 +45,9 @@ class _MyAppState extends State<MyApp> {
           'client/update': (BuildContext context) => ClientUpdatePage(),
           'client/orders/create': (BuildContext context) =>
               ClientOrdersCreatePage(),
+          'client/orders/list': (BuildContext context) =>
+              ClientOrdersListPage(),
+          'client/orders/map': (BuildContext context) => ClientOrdersMapPage(),
           'client/address/list': (BuildContext context) =>
               ClientAddressListPage(),
           'client/address/create': (BuildContext context) =>

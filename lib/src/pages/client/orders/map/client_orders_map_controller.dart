@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:iris_delivery_app_stable/src/api/environment.dart';
 import 'package:iris_delivery_app_stable/src/models/order.dart';
-import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
@@ -16,11 +14,10 @@ import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:url_launcher/url_launcher.dart';
 
-class DeliveryOrdersMapController {
+class ClientOrdersMapController {
   BuildContext context;
   Function refresh;
   Position _position;
-  StreamSubscription<Position> _positionStream;
 
   String addressName;
   LatLng addressLatLng;
@@ -46,7 +43,6 @@ class DeliveryOrdersMapController {
   SharedPref _sharedPref = new SharedPref();
 
   double _distanceBetween;
-
   IO.Socket socket;
 
   Future init(BuildContext context, Function refresh) async {
@@ -61,7 +57,18 @@ class DeliveryOrdersMapController {
       'transports': ['websocket'],
       'autoConnect': false,
     });
+
     socket.connect();
+    if (order != null) {
+      socket.on('position/${order.id}', (data) {
+        addMarker('delivery', data['lat'], data['lng'],
+            'Posición del Repartidor', '', deliveryMarker);
+        print(data);
+      });
+    } else {
+      print('Order es null');
+    }
+
     user = User.fromJson(await _sharedPref.read('user'));
     _ordersProviders.init(context, user);
     order = Order.fromJson(
@@ -71,69 +78,10 @@ class DeliveryOrdersMapController {
     checkGPS();
   }
 
-  void saveLocation() async {
-    order.lat = _position.latitude;
-    order.lng = _position.longitude;
-    await _ordersProviders.updateLatLng(order);
-  }
-
-  void emitPosition() {
-    socket.emit('position', {
-      'id_order': order.id,
-      'lat': _position.latitude,
-      'lng': _position.longitude,
-    });
-  }
-
   void isCloseToDeliveryPosition() {
     _distanceBetween = Geolocator.distanceBetween(_position.latitude,
         _position.longitude, order.address.lat, order.address.lng);
     print('Distancia: $_distanceBetween');
-  }
-
-  void updateToDelivered() async {
-    if (_distanceBetween <= 200) {
-      ResponseApi responseApi = await _ordersProviders.updateToDelivered(order);
-      if (responseApi.success) {
-        Fluttertoast.showToast(msg: responseApi.message);
-        Navigator.pushNamedAndRemoveUntil(
-            context, 'delivery/orders/list', (route) => false);
-      }
-    } else {
-      Fluttertoast.showToast(msg: 'Aún no estás en dirección de entrega');
-    }
-  }
-
-  void launchWaze() async {
-    var url =
-        'waze://?ll=${order.address.lat.toString()},${order.address.lng.toString()}';
-    var fallbackUrl =
-        'https://waze.com/ul?ll=${order.address.lat.toString()},${order.address.lng.toString()}&navigate=yes';
-    try {
-      bool launched =
-          await launch(url, forceSafariVC: false, forceWebView: false);
-      if (!launched) {
-        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-      }
-    } catch (e) {
-      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-    }
-  }
-
-  void launchGoogleMaps() async {
-    var url =
-        'google.navigation:q=${order.address.lat.toString()},${order.address.lng.toString()}';
-    var fallbackUrl =
-        'https://www.google.com/maps/search/?api=1&query=${order.address.lat.toString()},${order.address.lng.toString()}';
-    try {
-      bool launched =
-          await launch(url, forceSafariVC: false, forceWebView: false);
-      if (!launched) {
-        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-      }
-    } catch (e) {
-      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-    }
   }
 
   Future<void> setPolyLines(LatLng from, LatLng to) async {
@@ -152,11 +100,15 @@ class DeliveryOrdersMapController {
         width: 6);
 
     polylines.add(polyline);
+    animateCameraToPosition(order.lat, order.lng);
+
+    addMarker('delivery', order.lat, order.lng, 'Posición del repartidor', '',
+        deliveryMarker);
+
     refresh();
   }
 
   void dispose() {
-    _positionStream?.cancel();
     socket?.disconnect();
   }
 
@@ -184,30 +136,15 @@ class DeliveryOrdersMapController {
   void updateLocation() async {
     try {
       await _determinePosition();
-      _position = await Geolocator.getLastKnownPosition();
-      saveLocation();
-      animateCameraToPosition(_position.latitude, _position.longitude);
-      addMarker('delivery', _position.latitude, _position.longitude,
-          'Tu posisción', '', deliveryMarker);
+      // addMarker('delivery', _position.latitude, _position.longitude,
+      //     'Tu posisción', '', deliveryMarker);
       addMarker('home', order.address.lat, order.address.lng,
           'Dirección de entrega', '', homeMarker);
 
-      LatLng from = new LatLng(_position.latitude, _position.longitude);
+      LatLng from = new LatLng(order.lat, order.lng);
       LatLng to = new LatLng(order.address.lat, order.address.lng);
       setPolyLines(from, to);
-
-      _positionStream = Geolocator.getPositionStream(
-              desiredAccuracy: LocationAccuracy.best, distanceFilter: 1)
-          .listen((Position position) {
-        _position = position;
-        emitPosition();
-        addMarker('delivery', _position.latitude, _position.longitude,
-            'Tu posisción', '', deliveryMarker);
-
-        animateCameraToPosition(_position.latitude, _position.longitude);
-        isCloseToDeliveryPosition();
-        refresh();
-      });
+      refresh();
     } catch (e) {
       print('Error ' + e);
     }
