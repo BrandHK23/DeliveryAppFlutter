@@ -39,6 +39,10 @@ dependencies:
   flutter_polyline_points: ^0.2.4
   url_launcher: ^5.7.10
   socket_io_client: ^0.9.12
+  flutter_credit_card: 0.1.4
+  flutter_custom_clippers: ^1.1.2
+  stripe_payment: ^1.0.11
+
 
 
 

@@ -5,6 +5,9 @@ import 'package:iris_delivery_app_stable/src/pages/client/address/map/client_add
 import 'package:iris_delivery_app_stable/src/pages/client/orders/create/client_orders_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/orders/list/client_orders_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/orders/map/client_orders_map_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/payments/create/client_payments_create_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/payments/installments/client_payments_installments_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/payments/status/client_payments_status_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/products/list/client_products_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/update/client_update_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/list/delivery_orders_list_page.dart';
@@ -54,6 +57,12 @@ class _MyAppState extends State<MyApp> {
               ClientAddressCreatePage(),
           'client/address/map': (BuildContext context) =>
               ClientAddressMapPage(),
+          'client/payments/create': (BuildContext context) =>
+              ClientPaymentCreatePage(),
+          'client/payments/installments': (BuildContext context) =>
+              ClientPaymentInstallmentsPage(),
+          'client/payments/status': (BuildContext context) =>
+              ClientPaymentStatusPage(),
           'restaurant/orders/list': (BuildContext context) =>
               RestaurantOrdersListPage(),
           'restaurant/categories/create': (BuildContext context) =>

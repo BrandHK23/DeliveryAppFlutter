@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:iris_delivery_app_stable/src/models/address.dart';
-import 'package:iris_delivery_app_stable/src/models/order.dart';
-import 'package:iris_delivery_app_stable/src/models/product.dart';
-import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/address_providers.dart';
 import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
@@ -67,17 +64,17 @@ class ClientAddressListController {
   }
 
   void createOrder() async {
-    Address a = Address.fromJson(await _sharedPref.read('address') ?? {});
-    List<Product> selectedProducts =
-        Product.fromJsonList(await _sharedPref.read('order')).toList;
+    // Address a = Address.fromJson(await _sharedPref.read('address') ?? {});
+    // List<Product> selectedProducts =
+    //     Product.fromJsonList(await _sharedPref.read('order')).toList;
+    //
+    // Order order = new Order(
+    //   idClient: user.id,
+    //   idAddress: a.id,
+    //   products: selectedProducts,
+    // );
+    // ResponseApi responseApi = await _ordersProviders.create(order);
 
-    Order order = new Order(
-      idClient: user.id,
-      idAddress: a.id,
-      products: selectedProducts,
-    );
-    ResponseApi responseApi = await _ordersProviders.create(order);
-
-    print('Respuesta: ${responseApi.message}');
+    Navigator.pushNamed(context, 'client/payments/create');
   }
 }

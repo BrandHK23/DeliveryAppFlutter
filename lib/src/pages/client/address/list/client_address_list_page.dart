@@ -135,7 +135,7 @@ class _ClientAddressListPageState extends State<ClientAddressListPage> {
         margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: ElevatedButton(
           onPressed: _con.createOrder,
-          child: Text('Aceptar'),
+          child: Text('Continuar con el pago'),
           style: ElevatedButton.styleFrom(
             primary: MyColors.primaryColor,
             shape: RoundedRectangleBorder(
