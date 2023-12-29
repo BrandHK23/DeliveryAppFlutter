@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
@@ -16,6 +18,10 @@ class ClientProductListController {
   Function refresh;
   ProductsProviders _productsProviders = new ProductsProviders();
   List<Category> categories = [];
+
+  Timer searchOnStoppedTyping;
+  String productName = "";
+
   CategoriesProviders _categoriesProviders = new CategoriesProviders();
 
   Future init(BuildContext context, Function refresh) async {
@@ -28,8 +34,29 @@ class ClientProductListController {
     refresh();
   }
 
-  Future<List<Product>> getProducts(String idCategory) async {
-    return await _productsProviders.getByCategory(idCategory);
+  Future<List<Product>> getProducts(
+      String idCategory, String productName) async {
+    if (productName.isEmpty) {
+      return await _productsProviders.getByCategory(idCategory);
+    } else {
+      return await _productsProviders.getByCategoryAndProductName(
+          idCategory, productName);
+    }
+  }
+
+  void onChangeText(String text) {
+    Duration duration = Duration(milliseconds: 500);
+
+    if (searchOnStoppedTyping != null) {
+      searchOnStoppedTyping.cancel();
+      refresh();
+    }
+
+    searchOnStoppedTyping = new Timer(duration, () {
+      productName = text;
+      refresh();
+      print("Stopped typing ${text}");
+    });
   }
 
   void getCategories() async {
