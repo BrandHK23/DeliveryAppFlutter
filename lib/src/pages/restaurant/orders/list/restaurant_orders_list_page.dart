@@ -22,7 +22,8 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
     // TODO: implement initState
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _con.init(context, refresh);
+      _con.init(context, refresh); // Inicializar el controlador
+      _con.loadBusinessData(); // Cargar los datos del negocio
     });
   }
 
@@ -199,7 +200,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
               child: Column(
                 children: [
                   Text(
-                    '${_con.user?.name ?? ''} ${_con.user?.lastname ?? ''}',
+                    '${_con.business?.businessName ?? ''}',
                     style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -207,7 +208,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                     maxLines: 1,
                   ),
                   Text(
-                    _con.user?.email ?? '',
+                    _con.business?.email ?? '',
                     style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[300],
@@ -216,7 +217,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                     maxLines: 1,
                   ),
                   Text(
-                    _con.user?.phone ?? '',
+                    _con.business?.phone ?? '',
                     style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[300],
@@ -228,7 +229,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                     height: 60,
                     margin: EdgeInsets.only(top: 10),
                     child: FadeInImage(
-                      image: _con.user?.image != null
+                      image: _con.business?.logo != null
                           ? NetworkImage(_con.user?.image)
                           : AssetImage('assets/img/no-image.png'),
                       fit: BoxFit.contain,

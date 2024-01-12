@@ -52,4 +52,18 @@ class BusinessProviders {
       return null;
     }
   }
+
+  Future<ResponseApi> getBusinessByUserId(String userId) async {
+    try {
+      Uri uri = Uri.http(_url, '$_api/getBusinessByUserId/$userId');
+      Map<String, String> headers = {'Content-Type': 'application/json'};
+      final res = await http.get(uri, headers: headers);
+      final data = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(data);
+      return responseApi;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
 }

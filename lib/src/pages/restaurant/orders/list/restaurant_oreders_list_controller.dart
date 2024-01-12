@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/order.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/detail/restaurant_orders_detail_page.dart';
@@ -13,6 +15,7 @@ class RestaurantOrdersListController {
 
   Function refresh;
   User user;
+  Business business;
 
   bool isUpdated;
 
@@ -23,9 +26,17 @@ class RestaurantOrdersListController {
     this.context = context;
     this.refresh = refresh;
     user = User.fromJson(await _sharedPref.read("user"));
+    business = Business.fromJson(await _sharedPref.read("business"));
 
     _ordersProviders.init(context, user);
     refresh();
+  }
+
+  Future<void> loadBusinessData() async {
+    var businessData = await _sharedPref.read("business");
+    if (businessData != null) {
+      this.business = Business.fromJson(businessData);
+    }
   }
 
   Future<List<Order>> getOrders(String status) async {
