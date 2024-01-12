@@ -77,6 +77,12 @@ class ClientProductListController {
   }
 
   void openDrawer() {
+    print(user.userHasBusiness);
+    print(user.sessionToken);
+    print(user.email);
+    print(user.roles[0].name);
+    print(user.roles[0].name == 'RESTAURANTE');
+    print(user.name);
     key.currentState.openDrawer();
   }
 

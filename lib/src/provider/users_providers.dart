@@ -23,6 +23,27 @@ class UsersProviders {
     this.sessionUser = sessionUser;
   }
 
+  Future<bool> userHasBusiness(String userId) async {
+    try {
+      Uri url = Uri.http(_url, '$_api/userHasBusiness/$userId');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${sessionUser.sessionToken}'
+      };
+      final res = await http.get(url, headers: headers);
+
+      if (res.statusCode == 200) {
+        final data = json.decode(res.body);
+        return data['user_has_business']
+            as bool; // Asegúrate de que esta línea coincida con el formato de tu respuesta
+      }
+      return false;
+    } catch (e) {
+      print('Error: $e');
+      return false;
+    }
+  }
+
   Future<List<User>> getDeliveryMen() async {
     try {
       Uri url = Uri.http(_url, '$_api/findDeliveryMen');

@@ -17,18 +17,19 @@ class User {
   String image;
   List<Rol> roles = [];
   List<User> toList = [];
+  bool userHasBusiness;
 
-  User({
-    this.id,
-    this.name,
-    this.lastname,
-    this.email,
-    this.phone,
-    this.password,
-    this.sessionToken,
-    this.image,
-    this.roles,
-  });
+  User(
+      {this.id,
+      this.name,
+      this.lastname,
+      this.email,
+      this.phone,
+      this.password,
+      this.sessionToken,
+      this.image,
+      this.roles,
+      this.userHasBusiness});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"] is int ? json["id"].toString() : json["id"],
@@ -37,6 +38,9 @@ class User {
         email: json["email"],
         phone: json["phone"],
         password: json["password"],
+        userHasBusiness: json["user_has_business"] == null
+            ? false
+            : json["user_has_business"] as bool,
         sessionToken: json["session_token"],
         image: json["image"],
         roles: json["roles"] == null
@@ -64,6 +68,7 @@ class User {
         "session_token": sessionToken,
         "image": image,
         "roles": roles,
+        "user_has_business": userHasBusiness
       };
 
   // This method checks if the user has a role with the given name

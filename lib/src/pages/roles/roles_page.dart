@@ -11,7 +11,6 @@ class RolesPage extends StatefulWidget {
 }
 
 class _RolesPageState extends State<RolesPage> {
-
   RolesController _con = new RolesController();
 
   @override
@@ -23,6 +22,7 @@ class _RolesPageState extends State<RolesPage> {
       _con.init(context, refresh);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,47 +32,54 @@ class _RolesPageState extends State<RolesPage> {
       body: Container(
         margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.14),
         child: ListView(
-          children: _con.user != null ? _con.user.roles.map((Rol rol){
-            return _cardRol(rol);
-          }).toList() : [],
-    ),
+          children: _con.user != null
+              ? _con.user.roles.map((Rol rol) {
+                  return _cardRol(rol);
+                }).toList()
+              : [],
+        ),
       ),
     );
   }
 
-  Widget _cardRol(Rol rol){
+  Widget _cardRol(Rol rol) {
     return GestureDetector(
-      onTap: (){
-        _con.goToPage(rol.route);
+      onTap: () {
+        if (rol.name == 'RESTAURANTE') {
+          _con.goToPages(rol.name, rol.route);
+        } else {
+          _con.goToPage(rol.route);
+        }
       },
       child: Column(
         children: [
           Container(
             height: 100,
             child: FadeInImage(
-              image: rol.image != null ? NetworkImage(rol.image)
+              image: rol.image != null
+                  ? NetworkImage(rol.image)
                   : AssetImage('assets/img/no-image.png'),
               fit: BoxFit.contain,
               fadeInDuration: Duration(milliseconds: 50),
-              placeholder:AssetImage('assets/img/no-image.png'),
+              placeholder: AssetImage('assets/img/no-image.png'),
             ),
           ),
-          SizedBox(height: 15,),
-          Text(rol.name ?? '',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black
-          ),),
-          SizedBox(height: 15,),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            rol.name ?? '',
+            style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+          SizedBox(
+            height: 15,
+          ),
         ],
       ),
     );
   }
 
-  void refresh(){
-    setState(() {
-    });
+  void refresh() {
+    setState(() {});
   }
 }
-
-
