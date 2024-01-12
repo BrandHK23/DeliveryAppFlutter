@@ -5,23 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
+import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
 import 'package:iris_delivery_app_stable/src/provider/categories_providers.dart';
 import 'package:iris_delivery_app_stable/src/provider/products_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
-import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 
 class RestaurantProductsCreateController {
-
   BuildContext context;
   Function refresh;
 
   TextEditingController nameController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
-  MoneyMaskedTextController priceController = new MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
+  MoneyMaskedTextController priceController = new MoneyMaskedTextController(
+      decimalSeparator: '.', thousandSeparator: ',');
 
   CategoriesProviders _categoriesProvider = new CategoriesProviders();
   ProductsProviders _productsProviders = new ProductsProviders();
@@ -47,7 +47,7 @@ class RestaurantProductsCreateController {
     getCategories();
   }
 
-  void getCategories()async{
+  void getCategories() async {
     categories = await _categoriesProvider.getAll();
     refresh();
   }
@@ -62,12 +62,12 @@ class RestaurantProductsCreateController {
       return;
     }
 
-    if(imageFile1 == null || imageFile2 == null || imageFile3 == null){
+    if (imageFile1 == null || imageFile2 == null || imageFile3 == null) {
       MyAlertDialog.show(context, 'Debe seleccionar 3 imagenes');
       return;
     }
 
-    if(idCategory == null){
+    if (idCategory == null) {
       MyAlertDialog.show(context, 'Debe seleccionar una categoria');
       return;
     }
@@ -83,16 +83,27 @@ class RestaurantProductsCreateController {
     images.add(imageFile2);
     images.add(imageFile3);
 
-
     _progressDialog.show(max: 100, msg: 'Espere un momento...');
-    Stream stream = await _productsProviders.create(product, [imageFile1, imageFile2, imageFile3]);
+    Stream stream = await _productsProviders
+        .create(product, [imageFile1, imageFile2, imageFile3]);
     stream.listen((res) {
       _progressDialog.close();
 
-      ResponseApi responseApi = ResponseApi.fromJson(json.decode(res));
+      // Verifica si res es un String o un Map
+      ResponseApi responseApi;
+      if (res is String) {
+        responseApi = ResponseApi.fromJson(json.decode(res));
+      } else if (res is Map) {
+        responseApi = ResponseApi.fromJson(res);
+      } else {
+        // Manejo de un tipo inesperado
+        print('Tipo de datos inesperado: ${res.runtimeType}');
+        return;
+      }
+
       MyAlertDialog.show(context, responseApi.message);
 
-      if(responseApi.success){
+      if (responseApi.success) {
         resetValues();
       }
       print('Response: $res');
@@ -100,7 +111,7 @@ class RestaurantProductsCreateController {
     print('Producto: ${product.toJson()}');
   }
 
-  void resetValues(){
+  void resetValues() {
     nameController.text = '';
     descriptionController.text = '';
     priceController.text = '0.0';
@@ -112,16 +123,14 @@ class RestaurantProductsCreateController {
     refresh();
   }
 
-  Future selectImage(ImageSource imageSource, int numberFile) async{
+  Future selectImage(ImageSource imageSource, int numberFile) async {
     pickedFile = await ImagePicker().getImage(source: imageSource);
-    if(pickedFile != null){
-      if(numberFile == 1){
+    if (pickedFile != null) {
+      if (numberFile == 1) {
         imageFile1 = File(pickedFile.path);
-      }
-      else if(numberFile == 2){
+      } else if (numberFile == 2) {
         imageFile2 = File(pickedFile.path);
-      }
-      else if(numberFile == 3){
+      } else if (numberFile == 3) {
         imageFile3 = File(pickedFile.path);
       }
     }
@@ -129,16 +138,16 @@ class RestaurantProductsCreateController {
     refresh();
   }
 
-  void showAlertDialog(int numberFile){
+  void showAlertDialog(int numberFile) {
     Widget galleryButton = ElevatedButton(
-      onPressed: (){
+      onPressed: () {
         selectImage(ImageSource.gallery, numberFile);
       },
       child: Text('Galeria'),
     );
 
     Widget cameraButton = ElevatedButton(
-      onPressed: (){
+      onPressed: () {
         selectImage(ImageSource.camera, numberFile);
       },
       child: Text('Camara'),
@@ -154,9 +163,8 @@ class RestaurantProductsCreateController {
 
     showDialog(
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return alertDialog;
-        }
-    );
+        });
   }
 }

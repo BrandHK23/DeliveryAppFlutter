@@ -7,7 +7,6 @@ import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 
 class RestaurantCategoriesCreateController {
-
   BuildContext context;
   Function refresh;
 
@@ -34,18 +33,19 @@ class RestaurantCategoriesCreateController {
       return;
     }
 
-    Category category = new Category(
-        name: name,
-        description: description
-    );
+    Category category = new Category(name: name, description: description);
 
     ResponseApi responseApi = await _categoriesProvider.create(category);
 
-    MyAlertDialog.show(context, responseApi.message);
+    if (responseApi != null) {
+      MyAlertDialog.show(context, responseApi.message);
 
-    if (responseApi.success) {
-      nameController.text = '';
-      descriptionController.text = '';
+      if (responseApi.success) {
+        nameController.text = '';
+        descriptionController.text = '';
+      }
+    } else {
+      print('La respuesta es null');
     }
   }
 }
