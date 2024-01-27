@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/address/create/restaurant_address_create_controller.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/create/restaurante_create_controller.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 
@@ -12,6 +13,8 @@ class RestaurantCreatePage extends StatefulWidget {
 
 class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
   RestaurantCreateController _con = new RestaurantCreateController();
+  RestaurantAddressCreateController _conAddress =
+      new RestaurantAddressCreateController();
 
   @override
   void initState() {
@@ -20,6 +23,7 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _con.init(context, refresh);
+      _conAddress.init(context, refresh);
     });
   }
 
@@ -38,6 +42,7 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
               _textFieldPhone(),
               _idNegocio(),
               _addressField(),
+              _neighborhoodField(),
               _pointOnMap(),
               _buttonRegister(),
               _buttonBack(),
@@ -119,9 +124,30 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
           color: MyColors.primaryOpacityColor,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
-        controller: _con.addressController,
+        controller: _conAddress.addressController,
         decoration: InputDecoration(
-            hintText: 'Dirección del negocio',
+            hintText: 'Calle',
+            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(15),
+            prefixIcon: Icon(
+              Icons.map,
+              color: MyColors.primaryColor,
+            )),
+      ),
+    );
+  }
+
+  Widget _neighborhoodField() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+      decoration: BoxDecoration(
+          color: MyColors.primaryOpacityColor,
+          borderRadius: BorderRadius.circular(30)),
+      child: TextField(
+        controller: _conAddress.neighborhoodController,
+        decoration: InputDecoration(
+            hintText: 'Colonia',
             hintStyle: TextStyle(color: MyColors.primaryColorDark),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
@@ -140,6 +166,10 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
           color: MyColors.primaryOpacityColor,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
+        controller: _conAddress.refPointController,
+        onTap: () => openMap(context),
+        autofocus: false,
+        focusNode: AlwaysDisabledFocusNode(),
         decoration: InputDecoration(
             hintText: 'Ubicación en el mapa',
             hintStyle: TextStyle(color: MyColors.primaryColorDark),
@@ -151,6 +181,10 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
             )),
       ),
     );
+  }
+
+  void openMap(BuildContext context) {
+    _conAddress.openMap(context);
   }
 
   Widget _textFieldPhone() {
@@ -180,7 +214,7 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
       child: ElevatedButton(
-        onPressed: _con.isEnable ? _con.register : null,
+        onPressed: registerBusinessAndAddress,
         child: Text('Registrarse',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
@@ -224,4 +258,16 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
   void refresh() {
     setState(() {});
   }
+
+  void registerBusinessAndAddress() {
+    if (_con.isEnable) {
+      _con.register();
+      _conAddress.createBusinessAddress();
+    }
+  }
+}
+
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }

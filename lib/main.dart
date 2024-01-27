@@ -14,6 +14,7 @@ import 'package:iris_delivery_app_stable/src/pages/delivery/orders/list/delivery
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/map/delivery_orders_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/login/login_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/register/register_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/address/map/restaurant_address_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/category/create/restaurant_categories_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/create/restaurante_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/list/restaurant_orders_list_page.dart';
@@ -67,6 +68,8 @@ class _MyAppState extends State<MyApp> {
           'restaurant/orders/list': (BuildContext context) =>
               RestaurantOrdersListPage(),
           'restaurant/create': (BuildContext context) => RestaurantCreatePage(),
+          'restaurant/address/map': (BuildContext context) =>
+              RestaurantAddressMapPage(),
           'restaurant/categories/create': (BuildContext context) =>
               RestaurantCategoriesCreatePage(),
           'restaurant/products/create': (BuildContext context) =>

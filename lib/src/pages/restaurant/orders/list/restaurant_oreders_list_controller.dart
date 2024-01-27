@@ -28,14 +28,10 @@ class RestaurantOrdersListController {
     this.refresh = refresh;
     user = User.fromJson(await _sharedPref.read("user"));
 
-    String businessJson = await _sharedPref.read("business");
-    if (businessJson != null) {
-      Map<String, dynamic> businessMap = json.decode(businessJson);
-      business = Business.fromJson(businessMap);
-    }
+    await loadBusinessData(); // Asegúrate de cargar los datos del negocio aquí
 
     _ordersProviders.init(context, user);
-    refresh();
+    refresh(); // Actualiza la UI después de cargar los datos
   }
 
   Future<void> loadBusinessData() async {
@@ -43,6 +39,10 @@ class RestaurantOrdersListController {
     if (businessJson != null) {
       Map<String, dynamic> businessMap = json.decode(businessJson);
       this.business = Business.fromJson(businessMap);
+      print(
+          "Business data loaded: ${this.business.toJson()}"); // Agregar para depuración
+    } else {
+      print("Business data not loaded"); // Agregar para depuración
     }
   }
 

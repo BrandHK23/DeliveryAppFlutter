@@ -21,9 +21,10 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       _con.init(context, refresh); // Inicializar el controlador
-      _con.loadBusinessData(); // Cargar los datos del negocio
+      await _con.loadBusinessData(); // Cargar los datos del negocio
+      refresh(); // Actualizar la UI
     });
   }
 

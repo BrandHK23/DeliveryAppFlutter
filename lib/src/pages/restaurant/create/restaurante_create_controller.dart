@@ -15,7 +15,6 @@ class RestaurantCreateController {
   TextEditingController emailController = new TextEditingController();
   TextEditingController nameController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
-  TextEditingController addressController = new TextEditingController();
   TextEditingController idNegocioController = new TextEditingController();
 
   BusinessProviders businessProvider = new BusinessProviders();
@@ -37,7 +36,6 @@ class RestaurantCreateController {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String phone = phoneController.text.trim();
-    String address = addressController.text.trim();
     String idNegocio = idNegocioController.text.trim();
 
     if (email.isEmpty || name.isEmpty || phone.isEmpty || idNegocio.isEmpty) {
@@ -85,7 +83,6 @@ class RestaurantCreateController {
     print('Name: $name');
     print('Email: $email');
     print('Phone: $phone');
-    print('Address: $address');
     print('IdNegocio: $idNegocio');
   }
 
