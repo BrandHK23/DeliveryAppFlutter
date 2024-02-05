@@ -52,6 +52,7 @@ class RestaurantAddressCreateController {
     ResponseApi responseApi =
         await _businessAddressProvider.create(businessAddress);
     if (responseApi.success) {
+      print("Ubicación seleccionada: $refPoint");
       Fluttertoast.showToast(msg: responseApi.message);
       Navigator.pop(context);
     } else {
@@ -68,6 +69,8 @@ class RestaurantAddressCreateController {
 
     if (refPoint != null) {
       refPointController.text = refPoint['address'];
+      // Imprime la ubicación seleccionada
+      print("Ubicación seleccionada: ${refPoint['address']}");
       refresh();
     }
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/address/create/restaurant_address_create_controller.dart';
 import 'package:iris_delivery_app_stable/src/provider/business_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_snackbar.dart';
@@ -18,6 +19,8 @@ class RestaurantCreateController {
   TextEditingController idNegocioController = new TextEditingController();
 
   BusinessProviders businessProvider = new BusinessProviders();
+  RestaurantAddressCreateController _conAddress =
+      new RestaurantAddressCreateController();
 
   PickedFile pickedFile;
   File imageFile;
@@ -61,11 +64,10 @@ class RestaurantCreateController {
     );
 
     Stream stream = await businessProvider.createWithImage(business, imageFile);
-    stream.listen((res) {
+    stream.listen((res) async {
       print('Server Response: $res');
       _progressDialog.close();
 
-      // ResponseApi responseApi = await usersProviders.create(user);
       ResponseApi responseApi = ResponseApi.fromJson(json.decode(res));
       print('ResponseApi: ${responseApi.toJson()}');
       MySnackbar.show(context, responseApi.message);
