@@ -55,7 +55,7 @@ class ClientProductListController {
     searchOnStoppedTyping = new Timer(duration, () {
       productName = text;
       refresh();
-      print("Stopped typing ${text}");
+      print("Stopped typing $text");
     });
   }
 

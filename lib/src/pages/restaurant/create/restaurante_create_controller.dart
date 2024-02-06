@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
-import 'package:iris_delivery_app_stable/src/pages/restaurant/address/create/restaurant_address_create_controller.dart';
 import 'package:iris_delivery_app_stable/src/provider/business_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_alert_dialog.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_snackbar.dart';
@@ -19,8 +18,6 @@ class RestaurantCreateController {
   TextEditingController idNegocioController = new TextEditingController();
 
   BusinessProviders businessProvider = new BusinessProviders();
-  RestaurantAddressCreateController _conAddress =
-      new RestaurantAddressCreateController();
 
   PickedFile pickedFile;
   File imageFile;
@@ -74,7 +71,8 @@ class RestaurantCreateController {
 
       if (responseApi.success) {
         Future.delayed(Duration(seconds: 2), () {
-          Navigator.pushReplacementNamed(context, 'restaurant/orders/list');
+          Navigator.pushReplacementNamed(context, 'restaurant/address/create');
+          //Navigator.pushReplacementNamed(context, );
         });
       } else {
         isEnable = true;

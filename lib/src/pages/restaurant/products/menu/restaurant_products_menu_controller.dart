@@ -1,37 +1,42 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_delivery_app_stable/src/models/business.dart';
-import 'package:iris_delivery_app_stable/src/models/order.dart';
+import 'package:iris_delivery_app_stable/src/models/category.dart';
+import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
-import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/detail/restaurant_orders_detail_page.dart';
-import 'package:iris_delivery_app_stable/src/provider/orders_providers.dart';
+import 'package:iris_delivery_app_stable/src/provider/categories_providers.dart';
+import 'package:iris_delivery_app_stable/src/provider/products_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-class RestaurantOrdersListController {
+class RestaurantProductMenuController {
   BuildContext context;
   SharedPref _sharedPref = new SharedPref();
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
 
-  Function refresh;
   User user;
   Business business;
 
-  bool isUpdated;
+  Function refresh;
 
-  List<String> status = ['CREATED', 'PREPARED', 'SENT', 'DELIVERED'];
-  OrdersProviders _ordersProviders = new OrdersProviders();
+  ProductsProviders _productsProviders = new ProductsProviders();
+  CategoriesProviders _categoriesProviders = new CategoriesProviders();
+
+  List<Category> categories = [];
 
   Future init(BuildContext context, Function refresh) async {
     this.context = context;
     this.refresh = refresh;
+
     user = User.fromJson(await _sharedPref.read("user"));
 
     await loadBusinessData(); // Asegúrate de cargar los datos del negocio aquí
 
-    _ordersProviders.init(context, user);
-    refresh(); // Actualiza la UI después de cargar los datos
+    _categoriesProviders.init(context, user);
+    _productsProviders.init(context, user);
+    getCategories();
+    refresh();
   }
 
   Future<void> loadBusinessData() async {
@@ -46,17 +51,22 @@ class RestaurantOrdersListController {
     }
   }
 
-  Future<List<Order>> getOrders(String status) async {
-    return await _ordersProviders.getByStatus(status);
+  Future<List<Product>> getProducts(
+      String idCategory, String productName) async {
+    if (productName.isEmpty) {
+      return await _productsProviders.getByCategory(idCategory);
+    } else {
+      return await _productsProviders.getByCategoryAndProductName(
+          idCategory, productName);
+    }
   }
 
-  void openBottomSheet(Order order) async {
-    isUpdated = await showMaterialModalBottomSheet(
-        context: context,
-        builder: (context) => RestaurantOrdersDetailPage(order: order));
-    if (isUpdated ?? false) {
-      refresh();
+  void getCategories() async {
+    categories = await _categoriesProviders.getByBusiness(business.idBusiness);
+    if (business.idBusiness == null) {
+      print("Business id is null");
     }
+    refresh();
   }
 
   void logout() {
@@ -73,17 +83,15 @@ class RestaurantOrdersListController {
     Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
   }
 
-  void goToMenu() {
-    Navigator.pushNamedAndRemoveUntil(
-        context, 'restaurant/products/menu', (route) => false);
-  }
-
   void goToCategoryCreate() {
     Navigator.pushNamed(context, 'restaurant/categories/create');
   }
 
   void goToProductCreate() {
-    Navigator.pushNamedAndRemoveUntil(
-        context, 'restaurant/products/create', (route) => false);
+    Navigator.pushNamed(context, 'restaurant/products/create');
+  }
+
+  void goToOrders() {
+    Navigator.pushNamed(context, 'restaurant/orders/list');
   }
 }

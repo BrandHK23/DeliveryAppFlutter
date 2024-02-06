@@ -12,6 +12,7 @@ class RestaurantAddressCreateController {
   BuildContext context;
   Function refresh;
 
+  TextEditingController idBusinessController = new TextEditingController();
   TextEditingController refPointController = new TextEditingController();
   TextEditingController addressController = new TextEditingController();
   TextEditingController neighborhoodController = new TextEditingController();
@@ -33,6 +34,7 @@ class RestaurantAddressCreateController {
   void createBusinessAddress() async {
     String address = addressController.text.trim();
     String neighborhood = neighborhoodController.text.trim();
+    String idBusiness = idBusinessController.text.trim();
     double lat = refPoint['lat'] ?? 0;
     double lng = refPoint['lng'] ?? 0;
 
@@ -46,7 +48,7 @@ class RestaurantAddressCreateController {
       neighborhood: neighborhood,
       lat: lat,
       lng: lng,
-      idBusiness: user.id,
+      idBusiness: idBusiness,
     );
 
     ResponseApi responseApi =
@@ -54,7 +56,8 @@ class RestaurantAddressCreateController {
     if (responseApi.success) {
       print("Ubicación seleccionada: $refPoint");
       Fluttertoast.showToast(msg: responseApi.message);
-      Navigator.pop(context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, 'restaurant/orders/list', (route) => false);
     } else {
       Fluttertoast.showToast(msg: responseApi.message ?? "Error en el proceso");
     }

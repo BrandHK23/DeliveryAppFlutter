@@ -14,11 +14,13 @@ import 'package:iris_delivery_app_stable/src/pages/delivery/orders/list/delivery
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/map/delivery_orders_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/login/login_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/register/register_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/address/create/restaurant_address_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/address/map/restaurant_address_map_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/category/create/restaurant_categories_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/create/restaurante_create_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/list/restaurant_orders_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/products/create/restaurant_products_create_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/products/menu/restaurant_products_menu_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/roles/roles_page.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 
@@ -68,10 +70,14 @@ class _MyAppState extends State<MyApp> {
           'restaurant/orders/list': (BuildContext context) =>
               RestaurantOrdersListPage(),
           'restaurant/create': (BuildContext context) => RestaurantCreatePage(),
+          'restaurant/address/create': (BuildContext context) =>
+              RestaurantAddressCreatePage(),
           'restaurant/address/map': (BuildContext context) =>
               RestaurantAddressMapPage(),
           'restaurant/categories/create': (BuildContext context) =>
               RestaurantCategoriesCreatePage(),
+          'restaurant/products/menu': (BuildContext context) =>
+              RestaurantProductsMenuPage(),
           'restaurant/products/create': (BuildContext context) =>
               RestaurantProductsCreatePage(),
           'delivery/orders/list': (BuildContext context) =>

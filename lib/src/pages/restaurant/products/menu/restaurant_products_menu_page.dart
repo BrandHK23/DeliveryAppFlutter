@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:iris_delivery_app_stable/src/models/order.dart';
-import 'package:iris_delivery_app_stable/src/pages/restaurant/orders/list/restaurant_oreders_list_controller.dart';
+import 'package:iris_delivery_app_stable/src/models/category.dart';
+import 'package:iris_delivery_app_stable/src/models/product.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/products/menu/restaurant_products_menu_controller.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
-import 'package:iris_delivery_app_stable/src/utils/relative_time_util.dart';
 import 'package:iris_delivery_app_stable/src/widgets/no_data_widget.dart';
 
-class RestaurantOrdersListPage extends StatefulWidget {
-  const RestaurantOrdersListPage({Key key}) : super(key: key);
+class RestaurantProductsMenuPage extends StatefulWidget {
+  const RestaurantProductsMenuPage({Key key}) : super(key: key);
 
   @override
-  _RestaurantOrdersListPageState createState() =>
-      _RestaurantOrdersListPageState();
+  State<RestaurantProductsMenuPage> createState() =>
+      _RestaurantProductsMenuPageState();
 }
 
-class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
-  RestaurantOrdersListController _con = new RestaurantOrdersListController();
+class _RestaurantProductsMenuPageState
+    extends State<RestaurantProductsMenuPage> {
+  RestaurantProductMenuController _con = new RestaurantProductMenuController();
 
   @override
   void initState() {
@@ -31,11 +32,11 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: _con.status?.length,
+      length: _con.categories?.length ?? 0,
       child: Scaffold(
           key: _con.key,
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(100),
+            preferredSize: Size.fromHeight(90),
             child: AppBar(
               automaticallyImplyLeading: false,
               backgroundColor: Colors.white,
@@ -43,6 +44,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                 children: [
                   SizedBox(height: 55),
                   _menuDrawer(),
+                  SizedBox(height: 20),
                 ],
               ),
               bottom: TabBar(
@@ -50,9 +52,9 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.grey[400],
                 isScrollable: true,
-                tabs: List<Widget>.generate(_con.status.length, (index) {
+                tabs: List<Widget>.generate(_con.categories.length, (index) {
                   return Tab(
-                    child: Text(_con.status[index] ?? ''),
+                    child: Text(_con.categories[index].name ?? ''),
                   );
                 }),
               ),
@@ -60,115 +62,101 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
           ),
           drawer: _drawer(),
           body: TabBarView(
-            children: _con.status.map((String status) {
+            children: _con.categories.map((Category category) {
               return FutureBuilder(
-                  future: _con.getOrders(status),
-                  builder: (context, AsyncSnapshot<List<Order>> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length > 0) {
-                        return ListView.builder(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                            itemCount: snapshot.data?.length ?? 0,
-                            itemBuilder: (_, index) {
-                              return _cardOrder(snapshot.data[index]);
-                            });
-                      } else {
-                        return NoDataWidget(text: 'No hay ordenes');
-                      }
-                    } else {
-                      return NoDataWidget(text: 'No hay ordenes');
-                    }
-                  });
+                  builder: (context, AsyncSnapshot<List<Product>> snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data.length > 0) {
+                    return GridView.builder(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                        ),
+                        itemCount: snapshot.data?.length ?? 0,
+                        itemBuilder: (_, index) {
+                          return _cardProduct(snapshot.data[index]);
+                        });
+                  } else {
+                    return NoDataWidget(text: 'No hay productos');
+                  }
+                } else {
+                  return NoDataWidget(text: 'No hay productos');
+                }
+              });
             }).toList(),
           )),
     );
   }
 
-  Widget _cardOrder(Order order) {
+  Widget _cardProduct(Product product) {
     return GestureDetector(
-      onTap: () {
-        _con.openBottomSheet(order);
-      },
+      onTap: () {},
       child: Container(
-        height: 160,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        height: 250,
         child: Card(
+          color: Colors.white,
           elevation: 3,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Stack(
             children: [
               Positioned(
-                child: Container(
-                  height: 30,
-                  width: MediaQuery.of(context).size.width * 1,
-                  decoration: BoxDecoration(
-                    color: MyColors.accentColor,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                  ),
+                  top: -1,
+                  right: -1,
                   child: Container(
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Orden #${order.id}',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'NimbusSans',
-                          fontSize: 15),
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: MyColors.primaryColor,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20),
+                            topRight: Radius.circular(20))),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
                     ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 50, left: 20, right: 20),
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: 5),
+                  )),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      height: 150,
+                      margin: EdgeInsets.only(top: 10),
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      padding: EdgeInsets.all(20),
+                      child: FadeInImage(
+                        image: product.image1 != null
+                            ? NetworkImage(product.image1)
+                            : AssetImage('assets/img/no-image.png'),
+                        fit: BoxFit.contain,
+                        fadeInDuration: Duration(milliseconds: 50),
+                        placeholder: AssetImage('assets/img/no-image.png'),
+                      )),
+                  Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      height: 40,
                       child: Text(
-                        'Fecha: ${RelativeTimeUtil.getRelativeTime(order.timestamp)}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'NimbusSans',
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      child: Text(
-                        'Client: ${order.client?.name ?? ''} ${order.client?.lastname ?? ''}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'NimbusSans',
-                        ),
-                        maxLines: 1,
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      child: Text(
-                        'Dirección de entrega: ${order.address?.address ?? ''} ${order.address?.neighborhood ?? ''}',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'NimbusSans',
-                        ),
+                        product.name ?? '',
                         maxLines: 2,
-                      ),
-                    ),
-                  ],
-                ),
-              )
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontFamily: 'NimbusSans',
+                        ),
+                      )),
+                  Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      child: Text(
+                        '\$ ${product.price ?? ''}',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'NimbusSans',
+                            fontWeight: FontWeight.bold),
+                      ))
+                ],
+              ),
             ],
           ),
         ),
@@ -240,10 +228,13 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
                   )
                 ],
               )),
+          Divider(
+            color: MyColors.primaryColor,
+          ),
           ListTile(
-            onTap: _con.goToMenu,
-            title: Text('Menú'),
-            trailing: Icon(Icons.list_alt, color: MyColors.primaryColor),
+            onTap: _con.goToOrders,
+            title: Text('Ordenes'),
+            trailing: Icon(Icons.list, color: Colors.blue),
           ),
           Divider(
             color: MyColors.primaryColor,

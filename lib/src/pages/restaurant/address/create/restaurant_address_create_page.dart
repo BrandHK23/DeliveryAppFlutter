@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/address/create/restaurant_address_create_controller.dart';
-import 'package:iris_delivery_app_stable/src/pages/restaurant/create/restaurante_create_controller.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 
-class RestaurantCreatePage extends StatefulWidget {
-  const RestaurantCreatePage({Key key}) : super(key: key);
+class RestaurantAddressCreatePage extends StatefulWidget {
+  const RestaurantAddressCreatePage({Key key}) : super(key: key);
 
   @override
-  State<RestaurantCreatePage> createState() => _RestaurantCreatePageState();
+  State<RestaurantAddressCreatePage> createState() =>
+      _RestaurantAddressCreatePageState();
 }
 
-class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
-  RestaurantCreateController _con = new RestaurantCreateController();
+class _RestaurantAddressCreatePageState
+    extends State<RestaurantAddressCreatePage> {
   RestaurantAddressCreateController _conAddress =
       new RestaurantAddressCreateController();
 
@@ -22,7 +22,6 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
     super.initState();
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _con.init(context, refresh);
       _conAddress.init(context, refresh);
     });
   }
@@ -36,11 +35,10 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
           margin: EdgeInsets.only(top: 30),
           child: Column(
             children: [
-              _imageUser(),
-              _textFieldName(),
-              _textFieldEmail(),
-              _textFieldPhone(),
               _idNegocio(),
+              _addressField(),
+              _neighborhoodField(),
+              _pointOnMap(),
               _buttonRegister(),
               _buttonBack(),
             ],
@@ -50,49 +48,6 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
     ));
   }
 
-  Widget _textFieldEmail() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-      decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
-          borderRadius: BorderRadius.circular(30)),
-      child: TextField(
-        controller: _con.emailController,
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(
-            hintText: 'Correo electrónico',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.all(15),
-            prefixIcon: Icon(
-              Icons.email,
-              color: MyColors.primaryColor,
-            )),
-      ),
-    );
-  }
-
-  Widget _textFieldName() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-      decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
-          borderRadius: BorderRadius.circular(30)),
-      child: TextField(
-        controller: _con.nameController,
-        decoration: InputDecoration(
-            hintText: 'Nombre del negocio',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.all(15),
-            prefixIcon: Icon(
-              Icons.person,
-              color: MyColors.primaryColor,
-            )),
-      ),
-    );
-  }
-
   Widget _idNegocio() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
@@ -100,7 +55,7 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
           color: MyColors.primaryOpacityColor,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
-        controller: _con.idNegocioController,
+        controller: _conAddress.idBusinessController,
         decoration: InputDecoration(
             hintText: 'ID del negocio',
             hintStyle: TextStyle(color: MyColors.primaryColorDark),
@@ -114,26 +69,74 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
     );
   }
 
-  Widget _textFieldPhone() {
+  Widget _addressField() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
           color: MyColors.primaryOpacityColor,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
-        controller: _con.phoneController,
-        keyboardType: TextInputType.phone,
+        controller: _conAddress.addressController,
         decoration: InputDecoration(
-            hintText: 'Teléfono',
+            hintText: 'Calle',
             hintStyle: TextStyle(color: MyColors.primaryColorDark),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
-              Icons.phone,
+              Icons.map,
               color: MyColors.primaryColor,
             )),
       ),
     );
+  }
+
+  Widget _neighborhoodField() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+      decoration: BoxDecoration(
+          color: MyColors.primaryOpacityColor,
+          borderRadius: BorderRadius.circular(30)),
+      child: TextField(
+        controller: _conAddress.neighborhoodController,
+        decoration: InputDecoration(
+            hintText: 'Colonia',
+            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(15),
+            prefixIcon: Icon(
+              Icons.map,
+              color: MyColors.primaryColor,
+            )),
+      ),
+    );
+  }
+
+  Widget _pointOnMap() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+      decoration: BoxDecoration(
+          color: MyColors.primaryOpacityColor,
+          borderRadius: BorderRadius.circular(30)),
+      child: TextField(
+        controller: _conAddress.refPointController,
+        onTap: () => openMap(context),
+        autofocus: false,
+        focusNode: AlwaysDisabledFocusNode(),
+        decoration: InputDecoration(
+            hintText: 'Ubicación en el mapa',
+            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(15),
+            prefixIcon: Icon(
+              Icons.location_on,
+              color: MyColors.primaryColor,
+            )),
+      ),
+    );
+  }
+
+  void openMap(BuildContext context) {
+    _conAddress.openMap(context);
   }
 
   Widget _buttonRegister() {
@@ -141,8 +144,8 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
       child: ElevatedButton(
-        onPressed: registerBusinessAndAddress,
-        child: Text('Registrarse',
+        onPressed: _conAddress.createBusinessAddress,
+        child: Text('Agregar dirección',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
             primary: MyColors.primaryColor,
@@ -170,27 +173,8 @@ class _RestaurantCreatePageState extends State<RestaurantCreatePage> {
     );
   }
 
-  Widget _imageUser() {
-    return GestureDetector(
-      onTap: _con.showAlertDialog,
-      child: CircleAvatar(
-        backgroundImage: _con.imageFile != null
-            ? FileImage(_con.imageFile)
-            : AssetImage('assets/img/user_profile.png'),
-        radius: 50,
-        backgroundColor: MyColors.primaryOpacityColor,
-      ),
-    );
-  }
-
   void refresh() {
     setState(() {});
-  }
-
-  void registerBusinessAndAddress() {
-    if (_con.isEnable) {
-      _con.register();
-    }
   }
 }
 
