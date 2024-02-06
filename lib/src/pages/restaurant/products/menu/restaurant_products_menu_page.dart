@@ -228,9 +228,6 @@ class _RestaurantProductsMenuPageState
                   )
                 ],
               )),
-          Divider(
-            color: MyColors.primaryColor,
-          ),
           ListTile(
             onTap: _con.goToOrders,
             title: Text('Ordenes'),
