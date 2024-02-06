@@ -64,27 +64,30 @@ class _RestaurantProductsMenuPageState
           body: TabBarView(
             children: _con.categories.map((Category category) {
               return FutureBuilder(
+                  future:
+                      _con.getProducts(category.id, _con.business.idBusiness),
                   builder: (context, AsyncSnapshot<List<Product>> snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.length > 0) {
-                    return GridView.builder(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.7,
-                        ),
-                        itemCount: snapshot.data?.length ?? 0,
-                        itemBuilder: (_, index) {
-                          return _cardProduct(snapshot.data[index]);
-                        });
-                  } else {
-                    return NoDataWidget(text: 'No hay productos');
-                  }
-                } else {
-                  return NoDataWidget(text: 'No hay productos');
-                }
-              });
+                    if (snapshot.hasData) {
+                      if (snapshot.data.length > 0) {
+                        return GridView.builder(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.7,
+                            ),
+                            itemCount: snapshot.data?.length ?? 0,
+                            itemBuilder: (_, index) {
+                              return _cardProduct(snapshot.data[index]);
+                            });
+                      } else {
+                        return NoDataWidget(text: 'No hay productos');
+                      }
+                    } else {
+                      return NoDataWidget(text: 'No hay productos');
+                    }
+                  });
             }).toList(),
           )),
     );

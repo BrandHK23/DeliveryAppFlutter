@@ -52,13 +52,9 @@ class RestaurantProductMenuController {
   }
 
   Future<List<Product>> getProducts(
-      String idCategory, String productName) async {
-    if (productName.isEmpty) {
-      return await _productsProviders.getByCategory(idCategory);
-    } else {
-      return await _productsProviders.getByCategoryAndProductName(
-          idCategory, productName);
-    }
+      String idCategory, String idBusiness) async {
+    return await _productsProviders.getByCategoryAndBusiness(
+        idCategory, idBusiness);
   }
 
   void getCategories() async {
