@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
@@ -26,6 +27,7 @@ class RestaurantProductsCreateController {
   CategoriesProviders _categoriesProvider = new CategoriesProviders();
   ProductsProviders _productsProviders = new ProductsProviders();
   User user;
+  Business business;
   SharedPref sharedPref = new SharedPref();
 
   List<Category> categories = [];
@@ -42,13 +44,26 @@ class RestaurantProductsCreateController {
     this.refresh = refresh;
     _progressDialog = ProgressDialog(context: context);
     user = User.fromJson(await sharedPref.read('user'));
+    String businessJson = await sharedPref.read('business');
+    if (businessJson != null) {
+      Map<String, dynamic> businessMap = json.decode(businessJson);
+      business = Business.fromJson(businessMap);
+    } else {
+      print("No business data found in shared preferences");
+    }
+
     _categoriesProvider.init(context, user);
     _productsProviders.init(context, user);
-    getCategories();
+    getCategoriesByBusiness();
   }
 
   void getCategories() async {
     categories = await _categoriesProvider.getAll();
+    refresh();
+  }
+
+  void getCategoriesByBusiness() async {
+    categories = await _categoriesProvider.getByBusiness(business.idBusiness);
     refresh();
   }
 
