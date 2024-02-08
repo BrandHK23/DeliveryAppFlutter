@@ -6,9 +6,11 @@ import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
+import 'package:iris_delivery_app_stable/src/pages/restaurant/products/detail/restaurant_products_detail_page.dart';
 import 'package:iris_delivery_app_stable/src/provider/categories_providers.dart';
 import 'package:iris_delivery_app_stable/src/provider/products_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class RestaurantProductMenuController {
   BuildContext context;
@@ -63,6 +65,14 @@ class RestaurantProductMenuController {
       print("Business id is null");
     }
     refresh();
+  }
+
+  void openBottomSheet(Product product) {
+    showMaterialModalBottomSheet(
+        context: context,
+        builder: (context) => RestaurantProductsDetailPage(
+              product: product,
+            ));
   }
 
   void logout() {

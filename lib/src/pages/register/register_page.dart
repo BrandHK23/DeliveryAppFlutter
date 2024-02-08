@@ -52,19 +52,19 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.emailController,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
             hintText: 'Correo electrónico',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.email,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -74,18 +74,18 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.nameController,
         decoration: InputDecoration(
             hintText: 'Nombre',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.person,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -95,18 +95,18 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.lastnameController,
         decoration: InputDecoration(
             hintText: 'Apellido',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.person,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -116,19 +116,19 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.phoneController,
         keyboardType: TextInputType.phone,
         decoration: InputDecoration(
             hintText: 'Teléfono',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.phone,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -138,19 +138,19 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.passwordController,
         obscureText: true,
         decoration: InputDecoration(
             hintText: 'Contraseña',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.lock,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -160,19 +160,19 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.confirmPasswordController,
         obscureText: true,
         decoration: InputDecoration(
             hintText: 'Confirmar contraseña',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.chatDarkBlue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.lock,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -184,9 +184,13 @@ class _RegisterPageState extends State<RegisterPage> {
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
       child: ElevatedButton(
         onPressed: _con.isEnable ? _con.register : null,
-        child: Text('Registrarse'),
+        child: Text('Registrarse',
+            style: TextStyle(
+                color: MyColors.chatDarkBlue,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
-            primary: MyColors.primaryColor,
+            primary: MyColors.chatOrange,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             padding: EdgeInsets.symmetric(vertical: 15)),
@@ -196,14 +200,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buttonBack() {
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      margin: EdgeInsets.only(top: 5),
       child: TextButton(
         onPressed: () {
           Navigator.pop(context);
         },
         child: Text(
           'Cancelar',
-          style: TextStyle(color: MyColors.primaryColor),
+          style: TextStyle(color: MyColors.irisBlue, fontSize: 16),
         ),
         style:
             TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30)),
@@ -219,7 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ? FileImage(_con.imageFile)
             : AssetImage('assets/img/user_profile.png'),
         radius: 50,
-        backgroundColor: MyColors.primaryOpacityColor,
+        backgroundColor: MyColors.deliveryGray,
       ),
     );
   }

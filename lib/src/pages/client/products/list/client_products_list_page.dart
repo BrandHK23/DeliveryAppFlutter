@@ -221,10 +221,12 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
       child: Container(
         margin: EdgeInsets.only(left: 20),
         alignment: Alignment.centerLeft,
-        child: Image.asset(
-          'assets/img/menu.png',
-          width: 20,
-          height: 20,
+        child: Icon(
+          Icons.menu,
+          // Usa el icono de menú incluido en los iconos de material design
+          size: 24, // Tamaño del icono, ajusta según necesites
+          color:
+              Colors.black, // Color del icono, ajusta según el tema de tu app
         ),
       ),
     );

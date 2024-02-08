@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:iris_delivery_app_stable/src/models/rol.dart';
 import 'package:iris_delivery_app_stable/src/pages/roles/roles_controller.dart';
+import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 
 class RolesPage extends StatefulWidget {
   const RolesPage({Key key}) : super(key: key);
@@ -27,6 +28,7 @@ class _RolesPageState extends State<RolesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: MyColors.irisBlue,
         title: Text('Selecciona un rol'),
       ),
       body: Container(

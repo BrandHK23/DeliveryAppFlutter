@@ -197,7 +197,7 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-              decoration: BoxDecoration(color: MyColors.primaryColor),
+              decoration: BoxDecoration(color: MyColors.irisBlue),
               child: Column(
                 children: [
                   Text(

@@ -64,19 +64,19 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.emailController,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
             hintText: 'Correo electrónico',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.deliveryNavy),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.email,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -86,19 +86,19 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       decoration: BoxDecoration(
-          color: MyColors.primaryOpacityColor,
+          color: MyColors.deliveryGray,
           borderRadius: BorderRadius.circular(30)),
       child: TextField(
         controller: _con.passwordController,
         obscureText: true,
         decoration: InputDecoration(
             hintText: 'Contraseña',
-            hintStyle: TextStyle(color: MyColors.primaryColorDark),
+            hintStyle: TextStyle(color: MyColors.deliveryNavy),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(
               Icons.lock,
-              color: MyColors.primaryColor,
+              color: MyColors.irisGreen,
             )),
       ),
     );
@@ -123,9 +123,14 @@ class _LoginPageState extends State<LoginPage> {
       margin: EdgeInsets.symmetric(horizontal: 60, vertical: 10),
       child: ElevatedButton(
           onPressed: _con.login,
-          child: Text('Iniciar sesión'),
+          child: Text('Iniciar sesión',
+              style: TextStyle(
+                  color: MyColors.chatDarkBlue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold)),
           style: ElevatedButton.styleFrom(
-              primary: MyColors.primaryColor,
+              primary: MyColors.chatOrange, // Naranja para destacar
+              onPrimary: MyColors.chatDarkBlue, // Texto en color azul
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
               padding: EdgeInsets.symmetric(horizontal: 50))),
@@ -143,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             'Regístrate',
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: MyColors.primaryColor),
+                fontWeight: FontWeight.bold, color: MyColors.irisGreen),
           ),
         )
       ],

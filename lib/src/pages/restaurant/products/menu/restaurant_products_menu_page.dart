@@ -95,7 +95,9 @@ class _RestaurantProductsMenuPageState
 
   Widget _cardProduct(Product product) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        _con.openBottomSheet(product);
+      },
       child: Container(
         height: 250,
         child: Card(
@@ -118,6 +120,22 @@ class _RestaurantProductsMenuPageState
                             topRight: Radius.circular(20))),
                     child: Icon(
                       Icons.add,
+                      color: Colors.white,
+                    ),
+                  )),
+              Positioned(
+                  top: -1,
+                  left: -1,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: MyColors.redDelete,
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(20),
+                            topLeft: Radius.circular(20))),
+                    child: Icon(
+                      Icons.delete_forever,
                       color: Colors.white,
                     ),
                   )),
@@ -173,10 +191,10 @@ class _RestaurantProductsMenuPageState
       child: Container(
         margin: EdgeInsets.only(left: 20),
         alignment: Alignment.centerLeft,
-        child: Image.asset(
-          'assets/img/menu.png',
-          width: 20,
-          height: 20,
+        child: Icon(
+          Icons.menu,
+          size: 24, // Tamaño del icono
+          color: Colors.black, // Color del icono
         ),
       ),
     );
@@ -188,7 +206,7 @@ class _RestaurantProductsMenuPageState
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-              decoration: BoxDecoration(color: MyColors.primaryColor),
+              decoration: BoxDecoration(color: MyColors.irisBlue),
               child: Column(
                 children: [
                   Text(
