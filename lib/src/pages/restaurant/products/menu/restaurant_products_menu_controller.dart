@@ -41,6 +41,10 @@ class RestaurantProductMenuController {
     refresh();
   }
 
+  Future<void> handleRefresh() async {
+    return refresh(); // Asumiendo que `refresh` es tu función que actualiza la UI.
+  }
+
   Future<void> loadBusinessData() async {
     String businessJson = await _sharedPref.read("business");
     if (businessJson != null) {
@@ -57,6 +61,24 @@ class RestaurantProductMenuController {
       String idCategory, String idBusiness) async {
     return await _productsProviders.getByCategoryAndBusiness(
         idCategory, idBusiness);
+  }
+
+  // Delete Category
+  Future<bool> deleteCategory(String categoryId) async {
+    bool result = await _categoriesProviders.deleteCategory(categoryId);
+    if (result) {
+      getCategories(); // Asegúrate de que este método actualiza correctamente la UI o el estado de la app
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void deleteProduct(Product product) async {
+    bool result = await _productsProviders.deleteProduct(product.id);
+    if (result) {
+      refresh();
+    }
   }
 
   void getCategories() async {

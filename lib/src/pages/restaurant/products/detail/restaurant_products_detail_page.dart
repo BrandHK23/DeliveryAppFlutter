@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/pages/restaurant/products/detail/restaurant_products_detail_controller.dart';
+import 'package:iris_delivery_app_stable/src/provider/products_providers.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 
 class RestaurantProductsDetailPage extends StatefulWidget {
@@ -24,11 +25,14 @@ class _RestaurantProductsDetailPageState
   bool _isEditableDescription = false;
   bool _isEditablePrice = false;
 
+  ProductsProviders _productsProvider = new ProductsProviders();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      _productsProvider.init(context, _con.user);
       _con.init(context, refresh, widget.product);
     });
   }
@@ -68,130 +72,144 @@ class _RestaurantProductsDetailPageState
   Widget _editableNameField() {
     return Row(
       children: [
-        Expanded(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-                color: MyColors.deliveryGray,
-                // Color de fondo del campo de texto
-                borderRadius: BorderRadius.circular(30)),
-            child: TextFormField(
-              controller: _con.nameController, // Controlador del campo de texto
-              enabled: _isEditableName, // Habilita o deshabilita la edición
-              decoration: InputDecoration(
-                labelText: "Nombre del producto",
-                labelStyle: TextStyle(color: MyColors.deliveryNavy),
-                contentPadding:
-                    EdgeInsets.only(left: 15, right: 0, top: 15, bottom: 15),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide:
-                      BorderSide(color: MyColors.primaryColor, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide:
-                      BorderSide(color: MyColors.primaryColor, width: 2),
-                ),
-                border: InputBorder.none,
-              ),
+        _textFieldContainer(), // Widget para el campo de texto
+        _editIconButton(), // Widget para el botón de editar
+      ],
+    );
+  }
+
+  Widget _textFieldContainer() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: MyColors.deliveryGray.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: TextFormField(
+          controller: _con.nameController,
+          enabled: _isEditableName,
+          decoration: InputDecoration(
+            labelText: "Nombre del producto",
+            labelStyle: TextStyle(color: MyColors.deliveryNavy),
+            contentPadding:
+                EdgeInsets.only(left: 15, right: 0, top: 15, bottom: 15),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: MyColors.primaryColor, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: MyColors.primaryColor, width: 2),
+            ),
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _editIconButton() {
+    // Asume que hay una única variable booleana para controlar la edición de todos los campos
+    bool _isEditing =
+        _isEditableName || _isEditableDescription || _isEditablePrice;
+
+    return Container(
+      margin: EdgeInsets.only(right: 15),
+      decoration: BoxDecoration(
+        color: _isEditing ? MyColors.irisGreen : MyColors.primaryColor,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        color: Colors.white,
+        icon: Icon(_isEditing ? Icons.check : Icons.edit),
+        onPressed: () {
+          setState(() {
+            // Cambia el estado de edición de todos los campos
+            _isEditableName = !_isEditableName;
+            _isEditableDescription = !_isEditableDescription;
+            _isEditablePrice = !_isEditablePrice;
+
+            // Si se está desactivando el modo de edición, guarda los cambios localmente
+            if (!_isEditableName &&
+                !_isEditableDescription &&
+                !_isEditablePrice) {
+              _con.saveLocalChanges();
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _editablePriceField() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: MyColors.deliveryGray.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: TextFormField(
+          controller: _con.priceController,
+          enabled: _isEditablePrice,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          // Asegúrate de que el teclado sea numérico
+          decoration: InputDecoration(
+            labelText: "Precio del producto",
+            labelStyle: TextStyle(color: MyColors.deliveryNavy),
+            contentPadding:
+                EdgeInsets.only(left: 15, right: 0, top: 15, bottom: 15),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: MyColors.primaryColor, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: MyColors.primaryColor, width: 2),
+            ),
+            border: InputBorder.none,
+            prefixText: "\$",
+            // Aquí agregas el símbolo $
+            prefixStyle: TextStyle(
+                color: MyColors.deliveryNavy,
+                fontSize: 16), // Estilo para el símbolo $
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _saveButton() {
+    return Expanded(
+      child: Container(
+        height: 60, // Ajusta la altura según necesites
+        margin: EdgeInsets.symmetric(horizontal: 10),
+        child: ElevatedButton(
+          onPressed: () {
+            // Lógica para guardar todos los cambios realizados
+            _con.saveChanges();
+          },
+          style: ElevatedButton.styleFrom(
+            primary: MyColors.primaryColor, // Color del botón
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
-        ),
-        Container(
-          margin: EdgeInsets.only(right: 15),
-          decoration: BoxDecoration(
-            color: _isEditableName ? MyColors.irisGreen : MyColors.primaryColor,
-            // Cambia el color aquí
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            color: Colors.white,
-            icon: Icon(_isEditableName ? Icons.check : Icons.edit),
-            onPressed: () {
-              setState(() {
-                _isEditableName = !_isEditableName;
-                _isEditableDescription = !_isEditableDescription;
-                _isEditablePrice = !_isEditablePrice;
-                if (!_isEditableName &&
-                    !_isEditableDescription &&
-                    !_isEditablePrice) {
-                  // Aquí tu lógica para guardar el cambio
-                }
-              });
-            },
+          child: Text(
+            "Guardar",
+            style: TextStyle(fontSize: 16),
           ),
         ),
-      ],
+      ),
     );
   }
 
   Widget _editablePriceFieldAndSaveButton() {
     return Row(
       children: [
-        Expanded(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: MyColors.deliveryGray,
-              // Asegúrate de usar el color de tu tema
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: TextFormField(
-              controller: TextEditingController(
-                  text: _con.product?.price.toString() ?? ''),
-              enabled: _isEditablePrice,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Precio",
-                labelStyle: TextStyle(color: MyColors.deliveryNavy),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(15),
-                prefixText: "\$ ",
-                prefixStyle: TextStyle(
-                    color: MyColors.deliveryNavy,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
-                      color: MyColors.primaryColor,
-                      width: 1), // Borde cuando está habilitado
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
-                      color: MyColors.primaryColor,
-                      width: 2), // Borde cuando está enfocado
-                ),
-              ),
-              onFieldSubmitted: (value) {
-                // Lógica para guardar el valor cuando se finaliza la edición
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 60, // Ajusta la altura según necesites
-            margin: EdgeInsets.symmetric(horizontal: 10),
-            child: ElevatedButton(
-              onPressed: () {
-                // Lógica para guardar todos los cambios realizados
-              },
-              style: ElevatedButton.styleFrom(
-                primary: MyColors.primaryColor, // Color del botón
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              child: Text(
-                "Guardar",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ),
+        _editablePriceField(),
+        _saveButton(),
       ],
     );
   }
@@ -203,7 +221,8 @@ class _RestaurantProductsDetailPageState
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: MyColors.deliveryGray, // Usa el color adecuado de tu tema
+              color: MyColors.deliveryGray.withOpacity(0.5),
+              // Usa el color adecuado de tu tema
               borderRadius: BorderRadius.circular(30),
             ),
             child: TextFormField(

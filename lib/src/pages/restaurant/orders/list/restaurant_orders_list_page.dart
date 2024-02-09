@@ -182,10 +182,10 @@ class _RestaurantOrdersListPageState extends State<RestaurantOrdersListPage> {
       child: Container(
         margin: EdgeInsets.only(left: 20),
         alignment: Alignment.centerLeft,
-        child: Image.asset(
-          'assets/img/menu.png',
-          width: 20,
-          height: 20,
+        child: Icon(
+          Icons.menu,
+          size: 24, // Tamaño del icono
+          color: Colors.black, // Color del icono
         ),
       ),
     );

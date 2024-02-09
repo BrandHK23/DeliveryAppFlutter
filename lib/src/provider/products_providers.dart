@@ -21,6 +21,65 @@ class ProductsProviders {
     this.sessionUser = sessionUser;
   }
 
+  // Delete Product
+  Future<bool> deleteProduct(String id) async {
+    try {
+      if (sessionUser == null || sessionUser.sessionToken == null) {
+        print("Error: sessionUser o sessionToken es null.");
+        return false;
+      }
+
+      Uri url = Uri.http(_url, '$_api/delete/$id');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken,
+      };
+
+      final response = await http.delete(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        return true; // Operación exitosa
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+      return false; // Operación fallida
+    } catch (e) {
+      print('Error: $e');
+      return false; // Error en la solicitud
+    }
+  }
+
+  // This method is used to update the product
+  Future<bool> updateProduct(Product product) async {
+    try {
+      if (sessionUser == null || sessionUser.sessionToken == null) {
+        print("Error: sessionUser o sessionToken es null.");
+        return false;
+      }
+
+      Uri url = Uri.http(_url, '$_api/updateNameDescPrice/${product.id}');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken,
+      };
+
+      String productJson = json.encode(product.toJson());
+      final response = await http.put(url, headers: headers, body: productJson);
+
+      if (response.statusCode == 200) {
+        return true; // Operación exitosa
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+      return false; // Operación fallida
+    } catch (e) {
+      print('Error: $e');
+      return false; // Error en la solicitud
+    }
+  }
+
   Future<List<Product>> getByCategoryAndBusiness(
       String idCategory, String idBusiness) async {
     try {

@@ -20,6 +20,35 @@ class CategoriesProviders {
     this.sessionUser = sessionUser;
   }
 
+  // Delete Category
+  Future<bool> deleteCategory(String id) async {
+    try {
+      if (sessionUser == null || sessionUser.sessionToken == null) {
+        print("Error: sessionUser o sessionToken es null.");
+        return false;
+      }
+
+      Uri url = Uri.http(_url, '$_api/delete/$id');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken,
+      };
+
+      final response = await http.delete(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        return true; // Operación exitosa
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+      return false; // Operación fallida
+    } catch (e) {
+      print('Error: $e');
+      return false; // Error en la solicitud
+    }
+  }
+
   Future<List<Category>> getAll() async {
     try {
       Uri url = Uri.http(_url, '$_api/getAll');
