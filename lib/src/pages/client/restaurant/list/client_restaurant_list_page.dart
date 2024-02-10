@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:iris_delivery_app_stable/src/models/category.dart';
-import 'package:iris_delivery_app_stable/src/models/product.dart';
-import 'package:iris_delivery_app_stable/src/pages/client/products/list/client_products_list_controller.dart';
+import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/utils/my_colors.dart';
 import 'package:iris_delivery_app_stable/src/widgets/no_data_widget.dart';
 
-class ClientProductsListPage extends StatefulWidget {
-  const ClientProductsListPage({Key key}) : super(key: key);
+import 'client_restaurant_list_controller.dart';
+
+class ClientRestaurantListPage extends StatefulWidget {
+  const ClientRestaurantListPage({Key key}) : super(key: key);
 
   @override
-  State<ClientProductsListPage> createState() => _ClientProductsListPageState();
+  State<ClientRestaurantListPage> createState() =>
+      _ClientRestaurantListPageState();
 }
 
-class _ClientProductsListPageState extends State<ClientProductsListPage> {
-  ClientProductListController _con = new ClientProductListController();
+class _ClientRestaurantListPageState extends State<ClientRestaurantListPage> {
+  ClientRestaurantListController _con = new ClientRestaurantListController();
 
   @override
   void initState() {
@@ -28,139 +29,146 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: _con.categories?.length,
-      child: Scaffold(
-          key: _con.key,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(170),
-            child: AppBar(
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.white,
-              actions: [_shoppingBag()],
-              flexibleSpace: Column(
-                children: [
-                  SizedBox(height: 55),
-                  _menuDrawer(),
-                  SizedBox(height: 20),
-                  _textFiledSearch(),
-                ],
-              ),
-              bottom: TabBar(
-                indicatorColor: MyColors.primaryColorLight,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey[400],
-                isScrollable: true,
-                tabs: List<Widget>.generate(_con.categories.length, (index) {
-                  return Tab(
-                    child: Text(_con.categories[index].name ?? ''),
-                  );
-                }),
-              ),
-            ),
+    return Scaffold(
+      key: _con.key,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(170),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          actions: [_shoppingBag()],
+          flexibleSpace: Column(
+            children: [
+              SizedBox(height: 55),
+              _menuDrawer(),
+              SizedBox(height: 20),
+              _textFiledSearch(),
+            ],
           ),
-          drawer: _drawer(),
-          body: TabBarView(
-            children: _con.categories.map((Category category) {
-              return FutureBuilder(
-                  future: _con.getProducts(category.id, _con.productName),
-                  builder: (context, AsyncSnapshot<List<Product>> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length > 0) {
-                        return GridView.builder(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.7,
-                            ),
-                            itemCount: snapshot.data?.length ?? 0,
-                            itemBuilder: (_, index) {
-                              return _cardProduct(snapshot.data[index]);
-                            });
-                      } else {
-                        return NoDataWidget(text: 'No hay productos');
-                      }
-                    } else {
-                      return NoDataWidget(text: 'No hay productos');
-                    }
-                  });
-            }).toList(),
-          )),
+        ),
+      ),
+      drawer: _drawer(),
+      body: FutureBuilder(
+        future: _con.getBusinessAvailable(),
+        builder: (context, AsyncSnapshot<List<Business>> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length > 0) {
+              return GridView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                ),
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, index) {
+                  return _cardBusiness(snapshot.data[index]);
+                },
+              );
+            } else {
+              return NoDataWidget(text: 'No hay negocios disponibles');
+            }
+          } else {
+            return NoDataWidget(text: 'No hay negocios disponibles');
+          }
+        },
+      ),
     );
   }
 
-  Widget _cardProduct(Product product) {
+  Widget _cardBusiness(Business business) {
     return GestureDetector(
       onTap: () {
-        _con.openBottomSheet(product);
+        // Lógica al hacer tap si es necesaria
       },
       child: Container(
-        height: 250,
+        height: 200, // Altura total del contenedor
         child: Card(
           color: Colors.white,
           elevation: 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Stack(
-            children: [
-              Positioned(
-                  top: -1,
-                  right: -1,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: MyColors.primaryColor,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              alignment: Alignment.bottomLeft,
+              children: [
+                FadeInImage(
+                  // Usamos FadeInImage para una carga elegante
+                  placeholder: AssetImage('assets/img/no-image.png'),
+                  image: business.logo != null
+                      ? NetworkImage(business.logo)
+                      : AssetImage('assets/img/no-image.png'),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.8),
+                        Colors.transparent,
+                      ],
                     ),
-                  )),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      height: 150,
-                      margin: EdgeInsets.only(top: 10),
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      padding: EdgeInsets.all(20),
-                      child: FadeInImage(
-                        image: product.image1 != null
-                            ? NetworkImage(product.image1)
-                            : AssetImage('assets/img/no-image.png'),
-                        fit: BoxFit.contain,
-                        fadeInDuration: Duration(milliseconds: 50),
-                        placeholder: AssetImage('assets/img/no-image.png'),
-                      )),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      height: 40,
-                      child: Text(
-                        product.name ?? '',
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        business.businessName ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'NimbusSans',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white,
                         ),
-                      )),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      child: Text(
-                        '\$ ${product.price ?? ''}',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'NimbusSans',
-                            fontWeight: FontWeight.bold),
-                      ))
-                ],
-              ),
-            ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "25-30 min",
+                        // Tiempo de preparación estático, puede ser dinámico
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 2,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star, color: Colors.amber, size: 16),
+                        Text(
+                          "4.5", // Calificación estática, puede ser dinámica
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -223,6 +231,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
         alignment: Alignment.centerLeft,
         child: Icon(
           Icons.menu,
+          // Usa el icono de menú incluido en los iconos de material design
           size: 24, // Tamaño del icono, ajusta según necesites
           color:
               Colors.black, // Color del icono, ajusta según el tema de tu app

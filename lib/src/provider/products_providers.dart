@@ -80,6 +80,7 @@ class ProductsProviders {
     }
   }
 
+  // This method is used to get for business Role
   Future<List<Product>> getByCategoryAndBusiness(
       String idCategory, String idBusiness) async {
     try {

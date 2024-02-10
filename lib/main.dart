@@ -9,6 +9,7 @@ import 'package:iris_delivery_app_stable/src/pages/client/payments/create/client
 import 'package:iris_delivery_app_stable/src/pages/client/payments/installments/client_payments_installments_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/payments/status/client_payments_status_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/products/list/client_products_list_page.dart';
+import 'package:iris_delivery_app_stable/src/pages/client/restaurant/list/client_restaurant_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/update/client_update_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/list/delivery_orders_list_page.dart';
 import 'package:iris_delivery_app_stable/src/pages/delivery/orders/map/delivery_orders_map_page.dart';
@@ -49,6 +50,8 @@ class _MyAppState extends State<MyApp> {
           'roles': (BuildContext context) => RolesPage(),
           'client/products/list': (BuildContext context) =>
               ClientProductsListPage(),
+          'client/restaurant/list': (BuildContext context) =>
+              ClientRestaurantListPage(),
           'client/update': (BuildContext context) => ClientUpdatePage(),
           'client/orders/create': (BuildContext context) =>
               ClientOrdersCreatePage(),

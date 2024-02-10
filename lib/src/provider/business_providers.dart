@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:iris_delivery_app_stable/src/api/environment.dart';
 import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/response_api.dart';
+import 'package:iris_delivery_app_stable/src/models/user.dart';
+import 'package:iris_delivery_app_stable/src/utils/shared_pref.dart';
 import 'package:path/path.dart';
 
 class BusinessProviders {
@@ -13,9 +16,11 @@ class BusinessProviders {
   String _api = '/api/business';
 
   BuildContext context;
+  User sessionUser;
 
-  Future init(BuildContext context) {
+  Future init(BuildContext context, User sessionUser) async {
     this.context = context;
+    this.sessionUser = sessionUser;
   }
 
   Future<ResponseApi> create(Business business) async {
@@ -64,6 +69,29 @@ class BusinessProviders {
     } catch (e) {
       print('Error: $e');
       return null;
+    }
+  }
+
+  Future<List<Business>> getAllAvailable() async {
+    try {
+      Uri uri = Uri.http(_url, '$_api/getAll');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+      final res = await http.get(uri, headers: headers);
+
+      if (res.statusCode == 401) {
+        Fluttertoast.showToast(msg: 'Sesión expirada');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
+      final data = json.decode(res.body);
+      Business business = Business.fromJsonList(data);
+      return business.toList;
+    } catch (e) {
+      print('Error: $e');
+      return [];
     }
   }
 }

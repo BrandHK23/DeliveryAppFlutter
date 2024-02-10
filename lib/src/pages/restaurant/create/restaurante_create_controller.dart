@@ -28,7 +28,7 @@ class RestaurantCreateController {
   Future init(BuildContext context, Function refresh) {
     this.context = context;
     this.refresh = refresh;
-    businessProvider.init(context);
+    businessProvider.init(context, null);
     _progressDialog = new ProgressDialog(context: context);
   }
 

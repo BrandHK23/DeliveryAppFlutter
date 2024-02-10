@@ -14,6 +14,7 @@ class Business {
   bool isActive = false;
   String sessionToken;
   String idUser;
+  List<Business> toList = [];
 
   Business({
     this.idBusiness,
@@ -38,6 +39,14 @@ class Business {
         sessionToken: json["session_token"],
         idUser: json["id_user"],
       );
+
+  Business.fromJsonList(List<dynamic> jsonList) {
+    if (jsonList == null) return;
+    jsonList.forEach((item) {
+      Business business = Business.fromJson(item);
+      toList.add(business);
+    });
+  }
 
   Map<String, dynamic> toJson() => {
         "id_business": idBusiness,
