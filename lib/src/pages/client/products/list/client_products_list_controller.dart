@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/models/user.dart';
@@ -16,6 +17,7 @@ class ClientProductListController {
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
   User user;
   Function refresh;
+  Business business;
   ProductsProviders _productsProviders = new ProductsProviders();
   List<Category> categories = [];
 
@@ -24,8 +26,9 @@ class ClientProductListController {
 
   CategoriesProviders _categoriesProviders = new CategoriesProviders();
 
-  Future init(BuildContext context, Function refresh) async {
+  Future init(BuildContext context, Business business, Function refresh) async {
     this.context = context;
+    this.business = business;
     this.refresh = refresh;
     user = User.fromJson(await _sharedPref.read("user"));
     _categoriesProviders.init(context, user);
@@ -60,7 +63,7 @@ class ClientProductListController {
   }
 
   void getCategories() async {
-    categories = await _categoriesProviders.getAll();
+    categories = await _categoriesProviders.getByBusiness(business.idBusiness);
     refresh();
   }
 
@@ -74,16 +77,6 @@ class ClientProductListController {
 
   void logout() {
     _sharedPref.logout(context, user.id);
-  }
-
-  void openDrawer() {
-    print(user.userHasBusiness);
-    print(user.sessionToken);
-    print(user.email);
-    print(user.roles[0].name);
-    print(user.roles[0].name == 'RESTAURANTE');
-    print(user.name);
-    key.currentState.openDrawer();
   }
 
   void goToRoles() {

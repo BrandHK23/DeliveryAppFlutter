@@ -71,6 +71,10 @@ class ClientRestaurantListController {
   }
    */
 
+  void goToRestaurantDetail(Business business) {
+    Navigator.pushNamed(context, 'client/products/list', arguments: business);
+  }
+
   void logout() {
     _sharedPref.logout(context, user.id);
   }

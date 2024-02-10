@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:iris_delivery_app_stable/src/models/business.dart';
 import 'package:iris_delivery_app_stable/src/models/category.dart';
 import 'package:iris_delivery_app_stable/src/models/product.dart';
 import 'package:iris_delivery_app_stable/src/pages/client/products/list/client_products_list_controller.dart';
@@ -18,11 +18,12 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _con.init(context, refresh);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final Business business =
+          ModalRoute.of(context).settings.arguments as Business;
+      // Aquí, pasas el objeto 'business' al controlador
+      _con.init(context, business, refresh);
     });
   }
 
@@ -41,7 +42,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
               flexibleSpace: Column(
                 children: [
                   SizedBox(height: 55),
-                  _menuDrawer(),
+                  _back(),
                   SizedBox(height: 20),
                   _textFiledSearch(),
                 ],
@@ -59,7 +60,6 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
               ),
             ),
           ),
-          drawer: _drawer(),
           body: TabBarView(
             children: _con.categories.map((Category category) {
               return FutureBuilder(
@@ -97,7 +97,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
         _con.openBottomSheet(product);
       },
       child: Container(
-        height: 250,
+        height: 250, // Altura total del contenedor
         child: Card(
           color: Colors.white,
           elevation: 3,
@@ -105,59 +105,70 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Stack(
             children: [
-              Positioned(
-                  top: -1,
-                  right: -1,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: MyColors.primaryColor,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                  )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      height: 150,
-                      margin: EdgeInsets.only(top: 10),
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      padding: EdgeInsets.all(20),
-                      child: FadeInImage(
-                        image: product.image1 != null
-                            ? NetworkImage(product.image1)
-                            : AssetImage('assets/img/no-image.png'),
-                        fit: BoxFit.contain,
-                        fadeInDuration: Duration(milliseconds: 50),
-                        placeholder: AssetImage('assets/img/no-image.png'),
-                      )),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      height: 40,
-                      child: Text(
-                        product.name ?? '',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'NimbusSans',
-                        ),
-                      )),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      child: Text(
-                        '\$ ${product.price ?? ''}',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'NimbusSans',
-                            fontWeight: FontWeight.bold),
-                      ))
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    // Margen alrededor de la imagen
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      // Bordes redondeados de la imagen
+                      child: Stack(
+                        children: [
+                          FadeInImage(
+                            height: 110,
+                            // Altura ajustada de la imagen
+                            width: MediaQuery.of(context).size.width * 0.5 - 20,
+                            // Ancho ajustado con margen
+                            image: product.image1 != null
+                                ? NetworkImage(product.image1)
+                                : AssetImage('assets/img/no-image.png'),
+                            fit: BoxFit.cover,
+                            fadeInDuration: Duration(milliseconds: 50),
+                            placeholder: AssetImage('assets/img/no-image.png'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      product.name ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'NimbusSans',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    child: Text(
+                      product.description ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontFamily: 'NimbusSans',
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    child: Text(
+                      '\$ ${product.price ?? ''}',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'NimbusSans',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -215,110 +226,19 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
     );
   }
 
-  Widget _menuDrawer() {
+  Widget _back() {
     return GestureDetector(
-      onTap: _con.openDrawer,
+      onTap: () {
+        Navigator.pop(context);
+      },
       child: Container(
-        margin: EdgeInsets.only(left: 20),
-        alignment: Alignment.centerLeft,
-        child: Icon(
-          Icons.menu,
-          size: 24, // Tamaño del icono, ajusta según necesites
-          color:
-              Colors.black, // Color del icono, ajusta según el tema de tu app
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          children: [
+            Icon(Icons.arrow_back_ios, color: Colors.black),
+            Text('Volver', style: TextStyle(color: Colors.black, fontSize: 17))
+          ],
         ),
-      ),
-    );
-  }
-
-  Widget _drawer() {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-              decoration: BoxDecoration(color: MyColors.primaryColor),
-              child: Column(
-                children: [
-                  Text(
-                    '${_con.user?.name ?? ''} ${_con.user?.lastname ?? ''}',
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                  ),
-                  Text(
-                    _con.user?.email ?? '',
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[300],
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
-                    maxLines: 1,
-                  ),
-                  Text(
-                    _con.user?.phone ?? '',
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[300],
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
-                    maxLines: 1,
-                  ),
-                  Container(
-                    height: 60,
-                    margin: EdgeInsets.only(top: 10),
-                    child: FadeInImage(
-                      image: _con.user?.image != null
-                          ? NetworkImage(_con.user?.image)
-                          : AssetImage('assets/img/no-image.png'),
-                      fit: BoxFit.contain,
-                      fadeInDuration: Duration(milliseconds: 50),
-                      placeholder: AssetImage('assets/img/no-image.png'),
-                    ),
-                  )
-                ],
-              )),
-          ListTile(
-            onTap: _con.goToUpdatePage,
-            title: Text('Editar Perfil'),
-            trailing:
-                Icon(Icons.edit, color: MyColors.primaryColor.withOpacity(0.8)),
-          ),
-          Divider(
-            color: MyColors.primaryColor.withOpacity(0.8),
-          ),
-          ListTile(
-            onTap: _con.goToOrdersList,
-            title: Text('Mis pedidos'),
-            trailing: Icon(Icons.shopping_cart, color: Colors.orange),
-          ),
-          Divider(
-            color: MyColors.primaryColor.withOpacity(0.8),
-          ),
-          _con.user != null
-              ? _con.user.roles.length > 1
-                  ? ListTile(
-                      onTap: _con.goToRoles,
-                      title: Text('Cambiar Rol'),
-                      trailing:
-                          Icon(Icons.person, color: MyColors.primaryColorDark),
-                    )
-                  : Container()
-              : Container(),
-          Divider(
-            color: MyColors.primaryColor.withOpacity(0.8),
-          ),
-          ListTile(
-            onTap: _con.logout,
-            title: Text('Cerrar sesión'),
-            trailing: Icon(Icons.power_settings_new, color: Colors.redAccent),
-          ),
-          Divider(
-            color: MyColors.primaryColor.withOpacity(0.8),
-          ),
-        ],
       ),
     );
   }

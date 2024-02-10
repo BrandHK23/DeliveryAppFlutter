@@ -78,7 +78,9 @@ class _ClientRestaurantListPageState extends State<ClientRestaurantListPage> {
   Widget _cardBusiness(Business business) {
     return GestureDetector(
       onTap: () {
-        // Lógica al hacer tap si es necesaria
+        // Lógica al hacer tap sobre un negocio
+        print(business.businessName);
+        _con.goToRestaurantDetail(business);
       },
       child: Container(
         height: 200, // Altura total del contenedor
